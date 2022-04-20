@@ -73,6 +73,36 @@ struct Mp1xxPwmRegs {
     volatile uint32_t SIDR;        /*!< TIM Size Identification register,         Address offset: 0x3FC */
 };
 
+enum gpioPort {
+    GPIO_A = 0,
+    GPIO_B = 1,
+    GPIO_C = 2,
+    GPIO_D = 3,
+    GPIO_E = 4,
+    GPIO_F = 5,
+    GPIO_G = 6,
+    GPIO_H = 7,
+    GPIO_I = 8,
+    GPIO_J = 9,
+    GPIO_K = 10,
+    GPIO_Z = 11,
+};
+
+enum timNum {
+    TIM_1 = 1,
+    TIM_2 = 2,
+    TIM_3 = 3,
+    TIM_4 = 4,
+    TIM_5 = 5,
+    TIM_8 = 8,
+    TIM_12 = 12,
+    TIM_13 = 13,
+    TIM_14 = 14,
+    TIM_15 = 15,
+    TIM_16 = 16,
+    TIM_17 = 17,
+};
+
 #ifdef __cplusplus
 #if __cplusplus
 }

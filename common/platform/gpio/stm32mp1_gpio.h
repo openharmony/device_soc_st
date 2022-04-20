@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2021 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@
 #include "osal_irq.h"
 #include "osal_mem.h"
 #include "osal_spinlock.h"
-// #include "plat_log.h"
 #include "stm32mp1xx_hal.h"
 
 #ifdef __cplusplus
@@ -39,15 +38,13 @@ extern "C" {
 #define STM32MP1XX_GPIO_IDR(base)           ((base) + 0x10)
 #define STM32MP1XX_GPIO_BSRR(base)          ((base) + 0x18)
 
-
-
 #define GROUP_MAX 13
 #define BIT_MAX   16
 
 struct GpioGroup {
     volatile unsigned char *regBase;
     EXTI_TypeDef *exitBase;
-    unsigned int index; 
+    unsigned int index;
     OsalIRQHandle irqFunc;
     OsalSpinlock lock;
     uint32_t irqSave;
@@ -72,6 +69,24 @@ static struct Mp1xxGpioCntlr g_Mp1xxGpioCntlr = {
     .bitNum = BIT_MAX,
 };
 
+enum pinNum {
+    PIN_0 = 0,
+    PIN_1 = 1,
+    PIN_2 = 2,
+    PIN_3 = 3,
+    PIN_4 = 4,
+    PIN_5 = 5,
+    PIN_6 = 6,
+    PIN_7 = 7,
+    PIN_8 = 8,
+    PIN_9 = 9,
+    PIN_10 = 10,
+    PIN_11 = 11,
+    PIN_12 = 12,
+    PIN_13 = 13,
+    PIN_14 = 14,
+    PIN_15 = 15,
+};
 
 #ifdef __cplusplus
 #if __cplusplus

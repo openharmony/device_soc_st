@@ -113,6 +113,15 @@ extern "C" {
 #define SPI_RX_INTR_MASK              0x1
 #define SPI_ALL_IRQ_CLEAR             0xFF8
 
+enum busNum {
+    SPI_1 = 1,
+    SPI_2 = 2,
+    SPI_3 = 3,
+    SPI_4 = 4,
+    SPI_5 = 5,
+    SPI_6 = 6,
+};
+
 enum busModeSel {
     SPI2S_DISABLED = 0,
     SPI2S_SPI_MODE = 1,

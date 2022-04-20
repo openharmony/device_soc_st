@@ -17,8 +17,7 @@
 
 #define HDF_LOG_TAG stm32mp1_pwm
 
-struct Mp1xxPwm
-{
+struct Mp1xxPwm {
     struct PwmDev dev;
     TIM_HandleTypeDef stm32mp1;
     volatile uint32_t *base;
@@ -28,47 +27,45 @@ struct Mp1xxPwm
 
 static GPIO_TypeDef *GPIORemp(uint32_t port)
 {
-    if (port > 11) {
+    if (port > GPIO_Z) {
         HDF_LOGE("%s: gpio remp stm32mp1 fail!", __func__);
         return 0;
     }
-    switch (port)
-    {
-        case 0:
+    switch (port) {
+        case GPIO_A:
             return OsalIoRemap(GPIOA_BASE, 0x400);
             break;
-        case 1:
+        case GPIO_B:
             return OsalIoRemap(GPIOB_BASE, 0x400);
             break;
-        case 2:
+        case GPIO_C:
             return OsalIoRemap(GPIOC_BASE, 0x400);
             break;
-        case 3:
+        case GPIO_D:
             return OsalIoRemap(GPIOD_BASE, 0x400);
             break;
-        case 4:
+        case GPIO_E:
             return OsalIoRemap(GPIOE_BASE, 0x400);
             break;
-        case 5:
+        case GPIO_F:
             return OsalIoRemap(GPIOF_BASE, 0x400);
             break;
-        case 6:
+        case GPIO_G:
             return OsalIoRemap(GPIOG_BASE, 0x400);
             break;
-        case 7:
+        case GPIO_H:
             return OsalIoRemap(GPIOH_BASE, 0x400);
             break;
-        case 8:
+        case GPIO_I:
             return OsalIoRemap(GPIOI_BASE, 0x400);
             break;
-        case 9:
+        case GPIO_J:
             return OsalIoRemap(GPIOJ_BASE, 0x400);
             break;
-        case 10:
+        case GPIO_K:
             return OsalIoRemap(GPIOK_BASE, 0x400);
             break;
-
-        case 11:
+        case GPIO_Z:
             return OsalIoRemap(GPIOZ_BASE, 0x400);
             break;
 
@@ -80,7 +77,7 @@ static GPIO_TypeDef *GPIORemp(uint32_t port)
 
 static void Mp1xxPwmGpioSet(struct Mp1xxPwm *stm32mp1)
 {
-    GPIO_InitTypeDef GPIO_Init = {0};
+    GPIO_InitTypeDef GPIO_Init = { 0 };
     /* init gpio */
     GPIO_Init.Mode = GPIO_MODE_AF_OD;
     GPIO_Init.Pull = GPIO_PULLUP;
@@ -93,86 +90,85 @@ static void Mp1xxPwmGpioSet(struct Mp1xxPwm *stm32mp1)
 static void Mp1xxPwmRccConfig(uint32_t num)
 {
     RCC_PeriphCLKInitTypeDef TIMx_clock_source_config;
-    switch (num)
-    {
-        case 1:
+    switch (num) {
+        case TIM_1:
             __HAL_RCC_TIM1_CLK_ENABLE();
             TIMx_clock_source_config.TIMG2PresSelection = RCC_TIMG2PRES_ACTIVATED;
             TIMx_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_TIMG2;
             HAL_RCCEx_PeriphCLKConfig(&TIMx_clock_source_config);
             break;
-        
-        case 2:
+
+        case TIM_2:
             __HAL_RCC_TIM2_CLK_ENABLE();
             TIMx_clock_source_config.TIMG1PresSelection = RCC_TIMG1PRES_ACTIVATED;
             TIMx_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_TIMG1;
             HAL_RCCEx_PeriphCLKConfig(&TIMx_clock_source_config);
             break;
 
-        case 3:
+        case TIM_3:
             __HAL_RCC_TIM3_CLK_ENABLE();
             TIMx_clock_source_config.TIMG1PresSelection = RCC_TIMG1PRES_ACTIVATED;
             TIMx_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_TIMG1;
             HAL_RCCEx_PeriphCLKConfig(&TIMx_clock_source_config);
             break;
-        
-        case 4:
+
+        case TIM_4:
             __HAL_RCC_TIM4_CLK_ENABLE();
             TIMx_clock_source_config.TIMG1PresSelection = RCC_TIMG1PRES_ACTIVATED;
             TIMx_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_TIMG1;
             HAL_RCCEx_PeriphCLKConfig(&TIMx_clock_source_config);
             break;
-        
-        case 5:
+
+        case TIM_5:
             __HAL_RCC_TIM5_CLK_ENABLE();
             TIMx_clock_source_config.TIMG1PresSelection = RCC_TIMG1PRES_ACTIVATED;
             TIMx_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_TIMG1;
             HAL_RCCEx_PeriphCLKConfig(&TIMx_clock_source_config);
             break;
-        
-        case 8:
+
+        case TIM_8:
             __HAL_RCC_TIM8_CLK_ENABLE();
             TIMx_clock_source_config.TIMG2PresSelection = RCC_TIMG2PRES_ACTIVATED;
             TIMx_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_TIMG2;
             HAL_RCCEx_PeriphCLKConfig(&TIMx_clock_source_config);
             break;
 
-        case 12:
+        case TIM_12:
             __HAL_RCC_TIM12_CLK_ENABLE();
             TIMx_clock_source_config.TIMG1PresSelection = RCC_TIMG1PRES_ACTIVATED;
             TIMx_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_TIMG1;
             HAL_RCCEx_PeriphCLKConfig(&TIMx_clock_source_config);
             break;
-        
-        case 13:
+
+        case TIM_13:
             __HAL_RCC_TIM13_CLK_ENABLE();
             TIMx_clock_source_config.TIMG1PresSelection = RCC_TIMG1PRES_ACTIVATED;
             TIMx_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_TIMG1;
             HAL_RCCEx_PeriphCLKConfig(&TIMx_clock_source_config);
             break;
-        
-        case 14:
+
+        case TIM_14:
             __HAL_RCC_TIM14_CLK_ENABLE();
             TIMx_clock_source_config.TIMG1PresSelection = RCC_TIMG1PRES_ACTIVATED;
             TIMx_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_TIMG1;
             HAL_RCCEx_PeriphCLKConfig(&TIMx_clock_source_config);
             break;
-        
-        case 15:
+
+        case TIM_15:
             __HAL_RCC_TIM15_CLK_ENABLE();
             TIMx_clock_source_config.TIMG2PresSelection = RCC_TIMG2PRES_ACTIVATED;
             TIMx_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_TIMG2;
             HAL_RCCEx_PeriphCLKConfig(&TIMx_clock_source_config);
             break;
-        
-        case 16:
+
+        case TIM_16:
             __HAL_RCC_TIM16_CLK_ENABLE();
             TIMx_clock_source_config.TIMG2PresSelection = RCC_TIMG2PRES_ACTIVATED;
             TIMx_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_TIMG2;
             HAL_RCCEx_PeriphCLKConfig(&TIMx_clock_source_config);
             break;
-        
-        case 17:
+
+        case TIM_17:
             __HAL_RCC_TIM17_CLK_ENABLE();
             TIMx_clock_source_config.TIMG2PresSelection = RCC_TIMG2PRES_ACTIVATED;
             TIMx_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_TIMG2;
@@ -183,7 +179,7 @@ static void Mp1xxPwmRccConfig(uint32_t num)
             break;
     }
 }
-     
+
 int32_t HdfPwmSetConfig(struct PwmDev *pwm, struct PwmConfig *config)
 {
     struct Mp1xxPwm *stm32mp1 = (struct Mp1xxPwm *)pwm;
@@ -196,8 +192,8 @@ int32_t HdfPwmSetConfig(struct PwmDev *pwm, struct PwmConfig *config)
     stm32mp1->reg->CCER &= ~(1 << 9); /* output Polarity */
     stm32mp1->reg->CCER |= ((config->polarity) << 9);
     stm32mp1->reg->PSC = PWM_DEFAULT_PSC;  /* prescaler 209, fre = 1MHz */
-    stm32mp1->reg->ARR = (config->period / PWM_DEFAULT_TICK) == 0 ? 0 : (config->period / PWM_DEFAULT_TICK - 1);  /* period */
-    stm32mp1->reg->CCR3 = (config->duty / PWM_DEFAULT_TICK) == 0 ? 0 : (config->duty / PWM_DEFAULT_TICK - 1);  /* duty */
+    stm32mp1->reg->ARR = (config->period / PWM_DEFAULT_TICK) == 0 ? 0 : (config->period / PWM_DEFAULT_TICK - 1); /* period */
+    stm32mp1->reg->CCR3 = (config->duty / PWM_DEFAULT_TICK) == 0 ? 0 : (config->duty / PWM_DEFAULT_TICK - 1); /* duty */
     stm32mp1->reg->CR1 |= config->status; /* disable/enable */
     return HDF_SUCCESS;
 }

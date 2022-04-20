@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2021 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,72 +37,73 @@ static int HdfCopyToUser(void *to, const void *from, unsigned long n)
     return HDF_SUCCESS;
 }
 
-static GPIO_TypeDef * GPIORemp(uint32_t port)
+static GPIO_TypeDef *GPIORemp(uint32_t port)
 {
-    if(port > 11)
-    {
+    if (port > GPIO_Z) {
         HDF_LOGE("%s: gpio remp stm32mp1 fail!", __func__);
         return 0;
     }
-    switch (port)
-    {
-    case 0:
-        return OsalIoRemap(GPIOA_BASE, 0x400);
-        break;
-    case 1:
-        return OsalIoRemap(GPIOB_BASE, 0x400);
-        break;
-    case 2:
-        return OsalIoRemap(GPIOC_BASE, 0x400);
-        break;
-    case 3:
-        return OsalIoRemap(GPIOD_BASE, 0x400);
-        break;
-    case 4:
-        return OsalIoRemap(GPIOE_BASE, 0x400);
-        break;
-    case 5:
-        return OsalIoRemap(GPIOF_BASE, 0x400);
-        break;
-    case 6:
-        return OsalIoRemap(GPIOG_BASE, 0x400);
-        break;
-    case 7:
-        return OsalIoRemap(GPIOH_BASE, 0x400);
-        break;
-    case 8:
-        return OsalIoRemap(GPIOI_BASE, 0x400);
-        break;
-    case 9:
-        return OsalIoRemap(GPIOJ_BASE, 0x400);
-        break;
-    case 10:
-        return OsalIoRemap(GPIOK_BASE, 0x400);
-        break;
+    switch (port) {
+        case GPIO_A:
+            return OsalIoRemap(GPIOA_BASE, 0x400);
+            break;
+        case GPIO_B:
+            return OsalIoRemap(GPIOB_BASE, 0x400);
+            break;
+        case GPIO_C:
+            return OsalIoRemap(GPIOC_BASE, 0x400);
+            break;
+        case GPIO_D:
+            return OsalIoRemap(GPIOD_BASE, 0x400);
+            break;
+        case GPIO_E:
+            return OsalIoRemap(GPIOE_BASE, 0x400);
+            break;
+        case GPIO_F:
+            return OsalIoRemap(GPIOF_BASE, 0x400);
+            break;
+        case GPIO_G:
+            return OsalIoRemap(GPIOG_BASE, 0x400);
+            break;
+        case GPIO_H:
+            return OsalIoRemap(GPIOH_BASE, 0x400);
+            break;
+        case GPIO_I:
+            return OsalIoRemap(GPIOI_BASE, 0x400);
+            break;
+        case GPIO_J:
+            return OsalIoRemap(GPIOJ_BASE, 0x400);
+            break;
+        case GPIO_K:
+            return OsalIoRemap(GPIOK_BASE, 0x400);
+            break;
+        case GPIO_Z:
+            return OsalIoRemap(GPIOZ_BASE, 0x400);
+            break;
 
-    default:
-        break;
+        default:
+            break;
     }
     return 0;
 }
 
 static void Mp1xxI2cCntlrInit(struct Mp1xxI2cCntlr *stm32mp1)
 {
-    GPIO_InitTypeDef GPIO_Init = {0};
+    GPIO_InitTypeDef GPIO_Init = { 0 };
     I2C_HandleTypeDef *hi2c = (I2C_HandleTypeDef *)&stm32mp1->hi2c;
 
     /* init gpio */
     GPIO_Init.Mode = GPIO_MODE_AF_OD;                          // 模式
     GPIO_Init.Pull = GPIO_PULLUP;                   // 上拉
     GPIO_Init.Speed = GPIO_SPEED_FREQ_VERY_HIGH;    // 频率
-    if(stm32mp1->bus == 1) {
+    if (stm32mp1->bus == 1) {
         GPIO_Init.Alternate = GPIO_AF5;
     } else {
         GPIO_Init.Alternate = GPIO_AF4;
     }
-    GPIO_Init.Pin = 1<<stm32mp1->i2cClkIomux[1];
+    GPIO_Init.Pin = 1 << stm32mp1->i2cClkIomux[1];
     HAL_GPIO_Init(GPIORemp(stm32mp1->i2cClkIomux[0]), &GPIO_Init);
-    GPIO_Init.Pin = 1<<stm32mp1->i2cDataIomux[1];
+    GPIO_Init.Pin = 1 << stm32mp1->i2cDataIomux[1];
     HAL_GPIO_Init(GPIORemp(stm32mp1->i2cDataIomux[0]), &GPIO_Init);
 
     HAL_I2C_Init(hi2c);
@@ -114,23 +115,20 @@ static int32_t Mp1xxI2cXferOneMsgPolling(const struct Mp1xxI2cCntlr *stm32mp1, c
     uint8_t val[255];
     struct I2cMsg *msg = &td->msgs[td->index];
     I2C_HandleTypeDef *hi2c = (I2C_HandleTypeDef *)&stm32mp1->hi2c;
-    if(msg->flags & I2C_FLAG_READ)
-    {
-        HAL_I2C_Master_Receive(hi2c, msg->addr+1, val, msg->len,1000);
+    if (msg->flags & I2C_FLAG_READ) {
+        HAL_I2C_Master_Receive(hi2c, msg->addr + 1, val, msg->len, I2C_TIMEOUT);
         status = HdfCopyToUser((void *)msg->buf, (void *)val, msg->len);
         if (status != HDF_SUCCESS) {
             HDF_LOGE("%s: HdfCopyFromUser fail:%d", __func__, status);
             goto end;
         }
-    }
-    else
-    {
+    } else {
         status = HdfCopyFromUser((void *)val, (void *)msg->buf, msg->len);
         if (status != HDF_SUCCESS) {
             HDF_LOGE("%s: copy to kernel fail:%d", __func__, status);
             goto end;
         }
-        HAL_I2C_Master_Transmit(hi2c, msg->addr, val, msg->len,1000);
+        HAL_I2C_Master_Transmit(hi2c, msg->addr, val, msg->len, I2C_TIMEOUT);
     }
 
 end:
@@ -159,8 +157,7 @@ static int32_t Mp1xxI2cTransfer(struct I2cCntlr *cntlr, struct I2cMsg *msgs, int
     td.count = count;
     td.index = 0;
     irqSave = LOS_IntLock();
-    while(td.index < td.count)
-    {
+    while (td.index < td.count) {
         ret = Mp1xxI2cXferOneMsgPolling(stm32mp1, &td);
         if (ret != 0) {
             break;
@@ -178,8 +175,7 @@ static const struct I2cMethod g_method = {
 static int32_t Mp1xxI2cLock(struct I2cCntlr *cntlr)
 {
     struct Mp1xxI2cCntlr *stm32mp1 = (struct Mp1xxI2cCntlr *)cntlr;
-    if(stm32mp1 != NULL)
-    {
+    if (stm32mp1 != NULL) {
         return OsalSpinLock(&stm32mp1->spin);
     }
     return HDF_SUCCESS;
@@ -226,12 +222,12 @@ static int32_t Mp1xxI2cReadDrs(struct Mp1xxI2cCntlr *stm32mp1, const struct Devi
         HDF_LOGE("%s: read bus fail!", __func__);
         return ret;
     }
-    ret = drsOps->GetUint32Array(node, "i2cClkIomux", stm32mp1->i2cClkIomux, 2, 0);
+    ret = drsOps->GetUint32Array(node, "i2cClkIomux", stm32mp1->i2cClkIomux, CLK_IO_MUX_BUF_SIZE, 0);
     if (ret != HDF_SUCCESS) {
         HDF_LOGE("%s: read no_stretch_mode fail!", __func__);
         return ret;
     }
-    ret = drsOps->GetUint32Array(node, "i2cDataIomux", stm32mp1->i2cDataIomux, 2, 0);
+    ret = drsOps->GetUint32Array(node, "i2cDataIomux", stm32mp1->i2cDataIomux, DATA_IO_MUX_BUF_SIZE, 0);
     if (ret != HDF_SUCCESS) {
         HDF_LOGE("%s: read no_stretch_mode fail!", __func__);
         return ret;
@@ -290,46 +286,45 @@ static void Mp1xxI2cRccConfig(uint32_t bus)
 {
     RCC_PeriphCLKInitTypeDef I2C2_clock_source_config;
 
-    switch (bus)
-    {
-    case 1:
-        __HAL_RCC_I2C1_CLK_ENABLE();
-        I2C2_clock_source_config.I2c12ClockSelection = RCC_I2C12CLKSOURCE_HSI;
-        I2C2_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_I2C12;
-        HAL_RCCEx_PeriphCLKConfig(&I2C2_clock_source_config);
-        break;
-    case 2:
-        __HAL_RCC_I2C2_CLK_ENABLE();
-        I2C2_clock_source_config.I2c12ClockSelection = RCC_I2C12CLKSOURCE_HSI;
-        I2C2_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_I2C12;
-        HAL_RCCEx_PeriphCLKConfig(&I2C2_clock_source_config);
-        break;
-    case 3:
-        __HAL_RCC_I2C3_CLK_ENABLE();
-        I2C2_clock_source_config.I2c35ClockSelection = RCC_I2C35CLKSOURCE_HSI;
-        I2C2_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_I2C35;
-        HAL_RCCEx_PeriphCLKConfig(&I2C2_clock_source_config);
-        break;
-    case 4:
-        __HAL_RCC_I2C4_CLK_ENABLE();
-        I2C2_clock_source_config.I2c46ClockSelection = RCC_I2C46CLKSOURCE_HSI;
-        I2C2_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_I2C46;
-        HAL_RCCEx_PeriphCLKConfig(&I2C2_clock_source_config);
-        break;
-    case 5:
-        __HAL_RCC_I2C5_CLK_ENABLE();
-        I2C2_clock_source_config.I2c35ClockSelection = RCC_I2C35CLKSOURCE_HSI;
-        I2C2_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_I2C35;
-        HAL_RCCEx_PeriphCLKConfig(&I2C2_clock_source_config);
-        break;
-    case 6:
-        __HAL_RCC_I2C6_CLK_ENABLE();
-        I2C2_clock_source_config.I2c46ClockSelection = RCC_I2C46CLKSOURCE_HSI;
-        I2C2_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_I2C46;
-        HAL_RCCEx_PeriphCLKConfig(&I2C2_clock_source_config);
-        break;
-    default:
-        break;
+    switch (bus) {
+        case I2C_1:
+            __HAL_RCC_I2C1_CLK_ENABLE();
+            I2C2_clock_source_config.I2c12ClockSelection = RCC_I2C12CLKSOURCE_HSI;
+            I2C2_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_I2C12;
+            HAL_RCCEx_PeriphCLKConfig(&I2C2_clock_source_config);
+            break;
+        case I2C_2:
+            __HAL_RCC_I2C2_CLK_ENABLE();
+            I2C2_clock_source_config.I2c12ClockSelection = RCC_I2C12CLKSOURCE_HSI;
+            I2C2_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_I2C12;
+            HAL_RCCEx_PeriphCLKConfig(&I2C2_clock_source_config);
+            break;
+        case I2C_3:
+            __HAL_RCC_I2C3_CLK_ENABLE();
+            I2C2_clock_source_config.I2c35ClockSelection = RCC_I2C35CLKSOURCE_HSI;
+            I2C2_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_I2C35;
+            HAL_RCCEx_PeriphCLKConfig(&I2C2_clock_source_config);
+            break;
+        case I2C_4:
+            __HAL_RCC_I2C4_CLK_ENABLE();
+            I2C2_clock_source_config.I2c46ClockSelection = RCC_I2C46CLKSOURCE_HSI;
+            I2C2_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_I2C46;
+            HAL_RCCEx_PeriphCLKConfig(&I2C2_clock_source_config);
+            break;
+        case I2C_5:
+            __HAL_RCC_I2C5_CLK_ENABLE();
+            I2C2_clock_source_config.I2c35ClockSelection = RCC_I2C35CLKSOURCE_HSI;
+            I2C2_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_I2C35;
+            HAL_RCCEx_PeriphCLKConfig(&I2C2_clock_source_config);
+            break;
+        case I2C_6:
+            __HAL_RCC_I2C6_CLK_ENABLE();
+            I2C2_clock_source_config.I2c46ClockSelection = RCC_I2C46CLKSOURCE_HSI;
+            I2C2_clock_source_config.PeriphClockSelection = RCC_PERIPHCLK_I2C46;
+            HAL_RCCEx_PeriphCLKConfig(&I2C2_clock_source_config);
+            break;
+        default:
+            break;
     }
 }
 
@@ -345,7 +340,6 @@ static int32_t Mp1xxI2cParseAndInit(struct HdfDeviceObject *device, const struct
         HDF_LOGE("%s: malloc stm32mp1 fail!", __func__);
         return HDF_ERR_MALLOC_FAIL;
     }
-
 
     ret = Mp1xxI2cReadDrs(stm32mp1, node);
     if (ret != HDF_SUCCESS) {
@@ -365,9 +359,9 @@ static int32_t Mp1xxI2cParseAndInit(struct HdfDeviceObject *device, const struct
 
     Mp1xxI2cCntlrInit(stm32mp1);
 
-    stm32mp1->cntlr.priv    = (void *)node;
-    stm32mp1->cntlr.busId   = stm32mp1->bus;
-    stm32mp1->cntlr.ops     = &g_method;
+    stm32mp1->cntlr.priv = (void *)node;
+    stm32mp1->cntlr.busId = stm32mp1->bus;
+    stm32mp1->cntlr.ops = &g_method;
     stm32mp1->cntlr.lockOps = &g_lockOps;
     (void)OsalSpinInit(&stm32mp1->spin);
     ret = I2cCntlrAdd(&stm32mp1->cntlr);
@@ -404,7 +398,8 @@ int32_t HdfI2cDeviceInit(struct HdfDeviceObject *device)
     }
 
     ret = HDF_SUCCESS;
-    DEV_RES_NODE_FOR_EACH_CHILD_NODE(device->property, childNode) {
+    DEV_RES_NODE_FOR_EACH_CHILD_NODE(device->property, childNode)
+    {
         ret = Mp1xxI2cParseAndInit(device, childNode);
         if (ret != HDF_SUCCESS) {
             break;
@@ -455,7 +450,8 @@ void HdfI2cDeviceRelease(struct HdfDeviceObject *device)
         HDF_LOGE("%s: device or property is NULL", __func__);
         return;
     }
-    DEV_RES_NODE_FOR_EACH_CHILD_NODE(device->property, childNode) {
+    DEV_RES_NODE_FOR_EACH_CHILD_NODE(device->property, childNode)
+    {
         Mp1xxI2cRemoveByNode(childNode);
     }
 }

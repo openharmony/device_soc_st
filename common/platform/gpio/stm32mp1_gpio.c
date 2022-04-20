@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2021 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ static int32_t Mp1xxGetGroupByGpioNum(struct GpioCntlr *cntlr, uint16_t gpio, st
 static int32_t Mp1xxGpioSetDir(struct GpioCntlr *cntlr, uint16_t gpio, uint16_t dir)
 {
     int32_t ret;
-    
+
     unsigned int val;
     volatile unsigned char *addr = NULL;
 
@@ -77,10 +77,10 @@ static int32_t Mp1xxGpioSetDir(struct GpioCntlr *cntlr, uint16_t gpio, uint16_t 
     addr = STM32MP1XX_GPIO_MODER(group->regBase);
     val = OSAL_READL(addr);
     if (dir == GPIO_DIR_IN) {
-        val &= ~(0X3 << (bitNum*2)); /* bit0:1 清零 */
+        val &= ~(0X3 << (bitNum * 2)); /* bit0:1 清零 */
     } else if (dir == GPIO_DIR_OUT) {
-        val &= ~(0X3 << (bitNum*2)); /* bit0:1 清零 */
-        val |= (0X1 << (bitNum*2)); /* bit0:1 设置 01 */
+        val &= ~(0X3 << (bitNum * 2)); /* bit0:1 清零 */
+        val |= (0X1 << (bitNum * 2)); /* bit0:1 设置 01 */
     }
     OSAL_WRITEL(val, addr);
     (void)OsalSpinUnlockIrqRestore(&group->lock, &group->irqSave);
@@ -101,7 +101,7 @@ static int32_t Mp1xxGpioGetDir(struct GpioCntlr *cntlr, uint16_t gpio, uint16_t 
 
     addr = STM32MP1XX_GPIO_MODER(group->regBase);
     val = OSAL_READL(addr);
-    if (val & (1 << (bitNum*2))) {
+    if (val & (1 << (bitNum * 2))) {
         *dir = GPIO_DIR_OUT;
     } else {
         *dir = GPIO_DIR_IN;
@@ -111,7 +111,7 @@ static int32_t Mp1xxGpioGetDir(struct GpioCntlr *cntlr, uint16_t gpio, uint16_t 
 static int32_t Mp1xxGpioWrite(struct GpioCntlr *cntlr, uint16_t gpio, uint16_t val)
 {
     int32_t ret;
-    
+
     unsigned int valCur;
     unsigned int bitNum = Mp1xxToBitNum(gpio);
     volatile unsigned char *addr = NULL;
@@ -128,7 +128,7 @@ static int32_t Mp1xxGpioWrite(struct GpioCntlr *cntlr, uint16_t gpio, uint16_t v
     valCur = OSAL_READL(addr);
     if (val == GPIO_VAL_LOW) {
         valCur &= ~(0x1 << bitNum);
-        valCur |= (0x1 << (bitNum+16));
+        valCur |= (0x1 << (bitNum + 16));
     } else {
         valCur |= (0x1 << bitNum);
     }
@@ -154,8 +154,8 @@ static int32_t Mp1xxGpioRead(struct GpioCntlr *cntlr, uint16_t gpio, uint16_t *v
     addr = STM32MP1XX_GPIO_IDR(group->regBase);
     valCur = OSAL_READL(addr);
     if (valCur & (1 << bitNum)) {
-        *val = GPIO_VAL_HIGH;   
-    } else{
+        *val = GPIO_VAL_HIGH;
+    } else {
         *val = GPIO_VAL_LOW;
     }
     return HDF_SUCCESS;
@@ -172,9 +172,8 @@ static uint32_t IrqHandleNoShare(uint32_t irq, void *data)
         return HDF_ERR_INVALID_PARAM;
     }
     for (i = 0; i < g_Mp1xxGpioCntlr.bitNum; i++) {
-        if(__HAL_GPIO_EXTI_GET_IT(1<<i,group->exitBase) != 0)
-        {
-            __HAL_GPIO_EXTI_CLEAR_IT(1<<i,group->exitBase);
+        if (__HAL_GPIO_EXTI_GET_IT(1 << i, group->exitBase) != 0) {
+            __HAL_GPIO_EXTI_CLEAR_IT(1 << i, group->exitBase);
             GpioCntlrIrqCallback(&g_Mp1xxGpioCntlr.cntlr, Mp1xxToGpioNum(group->index, i));
         }
     }
@@ -183,63 +182,61 @@ static uint32_t IrqHandleNoShare(uint32_t irq, void *data)
 
 static uint32_t  GetGpioIrqNum(uint16_t pinNum)
 {
-    if(pinNum > 15)
-    {
+    if (pinNum > PIN_15) {
         HDF_LOGE("%s: get gpio irq num fail!", __func__);
         return 0;
     }
-    switch (pinNum)
-    {
-    case 0:
-        return EXTI0_IRQn;
-        break;
-    case 1:
-        return EXTI1_IRQn;
-        break;
-    case 2:
-        return EXTI2_IRQn;
-        break;
-    case 3:
-        return EXTI3_IRQn;
-        break;
-    case 4:
-        return EXTI4_IRQn;
-        break;
-    case 5:
-        return EXTI5_IRQn;
-        break;
-    case 6:
-        return EXTI6_IRQn;
-        break;
-    case 7:
-        return EXTI7_IRQn;
-        break;
-    case 8:
-        return EXTI8_IRQn;
-        break;
-    case 9:
-        return EXTI9_IRQn;
-        break;
-    case 10:
-        return EXTI10_IRQn;
-        break;
-    case 11:
-        return EXTI11_IRQn;
-        break;
-    case 12:
-        return EXTI12_IRQn;
-        break;
-    case 13:
-        return EXTI13_IRQn;
-        break;
-    case 14:
-        return EXTI14_IRQn;
-        break;
-    case 15:
-        return EXTI15_IRQn;
-        break;
-    default:
-        break;
+    switch (pinNum) {
+        case PIN_0:
+            return EXTI0_IRQn;
+            break;
+        case PIN_1:
+            return EXTI1_IRQn;
+            break;
+        case PIN_2:
+            return EXTI2_IRQn;
+            break;
+        case PIN_3:
+            return EXTI3_IRQn;
+            break;
+        case PIN_4:
+            return EXTI4_IRQn;
+            break;
+        case PIN_5:
+            return EXTI5_IRQn;
+            break;
+        case PIN_6:
+            return EXTI6_IRQn;
+            break;
+        case PIN_7:
+            return EXTI7_IRQn;
+            break;
+        case PIN_8:
+            return EXTI8_IRQn;
+            break;
+        case PIN_9:
+            return EXTI9_IRQn;
+            break;
+        case PIN_10:
+            return EXTI10_IRQn;
+            break;
+        case PIN_11:
+            return EXTI11_IRQn;
+            break;
+        case PIN_12:
+            return EXTI12_IRQn;
+            break;
+        case PIN_13:
+            return EXTI13_IRQn;
+            break;
+        case PIN_14:
+            return EXTI14_IRQn;
+            break;
+        case PIN_15:
+            return EXTI15_IRQn;
+            break;
+        default:
+            break;
     }
     return 0;
 }
@@ -247,45 +244,45 @@ static uint32_t  GetGpioIrqNum(uint16_t pinNum)
 static int32_t GpioRegisterGroupIrqUnsafe(uint16_t pinNum, struct GpioGroup *group)
 {
     int ret;
-    
+
     ret = OsalRegisterIrq(GetGpioIrqNum(pinNum), 0, IrqHandleNoShare, "GPIO", group);
     if (ret != 0) {
         (void)OsalUnregisterIrq(GetGpioIrqNum(pinNum), group);
         ret = OsalRegisterIrq(GetGpioIrqNum(pinNum), 0, IrqHandleNoShare, "GPIO", group);
     }
-    
+
     if (ret != 0) {
         HDF_LOGE("%s: irq reg fail:%d!", __func__, ret);
         return HDF_FAILURE;
     }
-        
+
     ret = OsalEnableIrq(GetGpioIrqNum(pinNum));
     if (ret != 0) {
-        HDF_LOGE("%s: irq enable fail:%d!", __func__, ret);     
+        HDF_LOGE("%s: irq enable fail:%d!", __func__, ret);
         (void)OsalUnregisterIrq(GetGpioIrqNum(pinNum), group);
         return HDF_FAILURE;
     }
-        
+
     group->irqFunc = IrqHandleNoShare;
-    
+
     return HDF_SUCCESS;
 }
 static void GpioClearIrqUnsafe(struct GpioGroup *group, uint16_t bitNum)
 {
-    __HAL_GPIO_EXTI_CLEAR_IT(bitNum,group->exitBase);
+    __HAL_GPIO_EXTI_CLEAR_IT(bitNum, group->exitBase);
 }
 static int32_t Mp1xxGpioSetIrq(struct GpioCntlr *cntlr, uint16_t gpio, uint16_t mode)
 {
     int32_t ret = HDF_SUCCESS;
     struct GpioGroup *group = NULL;
     unsigned int bitNum = Mp1xxToBitNum(gpio);
-    
+
     ret = Mp1xxGetGroupByGpioNum(cntlr, gpio, &group);
     if (ret != HDF_SUCCESS) {
         return ret;
     }
     Mp1xxGpioSetDir(cntlr, gpio, GPIO_DIR_IN);
-    
+
     if (OsalSpinLockIrqSave(&group->lock, &group->irqSave) != HDF_SUCCESS) {
         return HDF_ERR_DEVICE_BUSY;
     }
@@ -293,7 +290,7 @@ static int32_t Mp1xxGpioSetIrq(struct GpioCntlr *cntlr, uint16_t gpio, uint16_t 
     EXTI_ConfigTypeDef EXTI_ConfigStructure;
     EXTI_HandleTypeDef hexti;
 
-    EXTI_ConfigStructure.Line = EXTI_GPIO | EXTI_EVENT | EXTI_REG1 |bitNum;
+    EXTI_ConfigStructure.Line = EXTI_GPIO | EXTI_EVENT | EXTI_REG1 | bitNum;
     EXTI_ConfigStructure.Trigger = mode;
     EXTI_ConfigStructure.GPIOSel = Mp1xxToGroupNum(gpio);
     EXTI_ConfigStructure.Mode = EXTI_MODE_C1_INTERRUPT;
@@ -324,7 +321,6 @@ static int32_t Mp1xxGpioUnsetIrq(struct GpioCntlr *cntlr, uint16_t gpio)
 
     gCntlr = (struct Mp1xxGpioCntlr *)cntlr->priv;
 
-
     return ret;
 }
 
@@ -340,7 +336,6 @@ static int32_t Mp1xxGpioEnableIrq(struct GpioCntlr *cntlr, uint16_t gpio)
         return HDF_ERR_INVALID_OBJECT;
     }
 
-
     ret = Mp1xxGetGroupByGpioNum(cntlr, gpio, &group);
     if (ret != HDF_SUCCESS) {
         HDF_LOGE("Mp1xxGetGroupByGpioNum failed\n");
@@ -350,13 +345,13 @@ static int32_t Mp1xxGpioEnableIrq(struct GpioCntlr *cntlr, uint16_t gpio)
     EXTI_ConfigTypeDef EXTI_ConfigStructure;
     EXTI_HandleTypeDef hexti;
 
-    Mp1xxGpioSetDir(cntlr,gpio,GPIO_DIR_IN);
-    
-    EXTI_ConfigStructure.Line = EXTI_GPIO | EXTI_EVENT | EXTI_REG1 |bitNum;
+    Mp1xxGpioSetDir(cntlr, gpio, GPIO_DIR_IN);
+
+    EXTI_ConfigStructure.Line = EXTI_GPIO | EXTI_EVENT | EXTI_REG1 | bitNum;
     EXTI_ConfigStructure.Trigger = EXTI_TRIGGER_FALLING;
     EXTI_ConfigStructure.GPIOSel = Mp1xxToGroupNum(gpio);
     EXTI_ConfigStructure.Mode = EXTI_MODE_C1_INTERRUPT;
-    
+
     HAL_EXTI_SetConfigLine(&hexti, &EXTI_ConfigStructure);
     gCntlr = (struct Mp1xxGpioCntlr *)cntlr->priv;
 
@@ -366,7 +361,6 @@ static int32_t Mp1xxGpioEnableIrq(struct GpioCntlr *cntlr, uint16_t gpio)
 static int32_t Mp1xxGpioDisableIrq(struct GpioCntlr *cntlr, uint16_t gpio)
 {
     int32_t ret = HDF_SUCCESS;
-
 
     if (cntlr == NULL || cntlr->priv == NULL) {
         HDF_LOGE("%s: GpioCntlr or cntlr.priv null!", __func__);
@@ -496,15 +490,13 @@ static void ReleaseGpioCntlrMem(struct Mp1xxGpioCntlr *cntlr)
 
 /* HdfDriverEntry hook function implementations */
 static int32_t GpioDriverBind(struct HdfDeviceObject *device)
-{   
+{
     (void)device;
     return HDF_SUCCESS;
-    
 }
 
 static int32_t GpioDriverInit(struct HdfDeviceObject *device)
 {
-   
     int32_t ret;
     struct Mp1xxGpioCntlr *stm32gpio = &g_Mp1xxGpioCntlr;
 

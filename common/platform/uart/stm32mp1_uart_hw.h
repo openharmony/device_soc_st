@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2022 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,8 @@
 
 #include "KRecvBuf.h"
 
-// #define STM32MP1_UART_DEBUG
-
 #define TX_BUF_SIZE (64)
+#define RX_BUF_SIZE (4096)
 #define UART_IRQ_NAME_SIZE  (16)
 
 struct Mp1xxUart;
@@ -90,10 +89,10 @@ struct Mp1xxUart {
     uint32_t flags;
 
     // tx
-    char tx_buf[TX_BUF_SIZE];               
+    char tx_buf[TX_BUF_SIZE];
 
     // rx
-    uint32_t rx_buf_size;                   
+    uint32_t rx_buf_size;
     struct Mp1xxUartRxCtl rx_ctl;
 
     void *priv;

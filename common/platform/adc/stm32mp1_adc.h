@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2022 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ extern "C" {
 #define MP1XX_ADC_AWD3CR_OFFSET        0xA4  // ADC 模拟看门狗 3 配置寄存器 (ADC_AWD3CR)
 #define MP1XX_ADC_LTR2_OFFSET          0xB0  // ADC 看门狗阈值下限寄存器 2 (ADC_LTR2)
 #define MP1XX_ADC_HTR2_OFFSET          0xB4  // ADC 看门狗高阈值寄存器 2 (ADC_HTR2)
-#define MP1XX_ADC_LTR3_OFFSET          0xB8  // ADC 看门狗阈值下限寄存器 3 (ADC_LTR3) 
+#define MP1XX_ADC_LTR3_OFFSET          0xB8  // ADC 看门狗阈值下限寄存器 3 (ADC_LTR3)
 #define MP1XX_ADC_HTR3_OFFSET          0xBC  // ADC 看门狗高阈值寄存器 3 (ADC_HTR3)
 #define MP1XX_ADC_DIFSEL_OFFSET        0xC0  // ADC 差分模式选择寄存器（ADC_DIFSEL）
 #define MP1XX_ADC_CALFACT_OFFSET       0xC4  // ADC 校准因子寄存器 (ADC_CALFACT)
