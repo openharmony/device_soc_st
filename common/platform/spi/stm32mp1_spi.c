@@ -578,7 +578,7 @@ static int32_t Mp1xxSpiTransferOneMessage(struct Mp1xxSpiCntlr *stm32mp1, struct
     }
 
     ret = Mp1xxSpiTxRx(stm32mp1, msg);
-    if (ret || msg->csChange) {
+    if (ret || msg->keepCs == 0) {
         Mp1xxSpiSetCs(stm32mp1, stm32mp1->curCs, SPI_CS_INACTIVE);
     }
     return ret;
