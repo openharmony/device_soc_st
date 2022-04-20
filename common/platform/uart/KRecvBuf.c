@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2022 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 
 #define HDF_LOG_TAG     KRecvBuf
 
-#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 UINT32 KRecvBufUsedSize(KRecvBuf *krbCB)
 {
@@ -98,7 +98,7 @@ UINT32 KRecvBufWrite(KRecvBuf *krbCB, const CHAR *buf, UINT32 size)
         return 0;
     }
 
-    if ((krbCB->fifo == NULL) || (krbCB->remain == 0))  {
+    if ((krbCB->fifo == NULL) || (krbCB->remain == 0)) {
         return 0;
     }
 
@@ -117,7 +117,7 @@ STATIC UINT32 KRecvBufReadLinear(KRecvBuf *krbCB, const CHAR *buf, UINT32 size)
     errno_t err;
 
     // this time max size
-    cpSize = MIN((krbCB->size - krbCB->remain),(krbCB->size - krbCB->rIdx));
+    cpSize = MIN((krbCB->size - krbCB->remain), (krbCB->size - krbCB->rIdx));
 
     // copy size
     cpSize = MIN(cpSize, size);
@@ -128,7 +128,6 @@ STATIC UINT32 KRecvBufReadLinear(KRecvBuf *krbCB, const CHAR *buf, UINT32 size)
 
     // copy data to user space
     err = LOS_CopyFromKernel((void *)buf, size, (void *)(krbCB->fifo + krbCB->rIdx), cpSize);
-    // err = memcpy_s(buf, size, krbCB->fifo + krbCB->rIdx, cpSize);
     if (err != EOK) {
         return 0;
     }

@@ -49,7 +49,7 @@ static void Mp1xxSpiSetPinMux(struct Mp1xxSpiCntlr *stm32mp1)
     for (i = 0; i < MP1XX_SPI_PIN_NUM * MP1XX_MEMBER_PER_PIN; i += MP1XX_MEMBER_PER_PIN) {
         if (stm32mp1->pins[i + PIN_GROUP] == MP1XX_GPIOZ) {
             tempBase = gpioZBase;
-        } else if (stm32mp1->pins[i + PIN_GROUP] < MP1XX_GPIO_GROUP_NUM){
+        } else if (stm32mp1->pins[i + PIN_GROUP] < MP1XX_GPIO_GROUP_NUM) {
             tempBase = gpioBase + MP1XX_GPIO_GROUP_STEP * stm32mp1->pins[i + PIN_GROUP];
         }
         value = OSAL_READL(tempBase);
@@ -64,7 +64,7 @@ static void Mp1xxSpiSetPinMux(struct Mp1xxSpiCntlr *stm32mp1)
             OSAL_WRITEL(value, tempBase + MP1XX_GPIO_AF_LOW_REG);
         } else {
             value = OSAL_READL(tempBase + MP1XX_GPIO_AF_HIGH_REG);
-            value &= ~(MP1XX_GPIO_AF_MASK << 
+            value &= ~(MP1XX_GPIO_AF_MASK <<
                 (MP1XX_GPIO_AF_BITS * stm32mp1->pins[i + PIN_NUM - MP1XX_PIN_NUM_PER_AF_REG]));
             value |= stm32mp1->pins[i + PIN_AF] <<
                 (MP1XX_GPIO_AF_BITS * stm32mp1->pins[i + PIN_NUM - MP1XX_PIN_NUM_PER_AF_REG]);
@@ -98,22 +98,22 @@ static int32_t Mp1xxSpiCfgCs(struct Mp1xxSpiCntlr *stm32mp1, uint32_t cs)
 static void Mp1xxSpiHwInitCfg(struct Mp1xxSpiCntlr *stm32mp1)
 {
     switch (stm32mp1->busNum) {
-        case 1:
+        case SPI_1:
             __HAL_RCC_SPI1_CLK_ENABLE();
             break;
-        case 2:
+        case SPI_2:
             __HAL_RCC_SPI2_CLK_ENABLE();
             break;
-        case 3:
+        case SPI_3:
             __HAL_RCC_SPI3_CLK_ENABLE();
             break;
-        case 4:
+        case SPI_4:
             __HAL_RCC_SPI4_CLK_ENABLE();
             break;
-        case 5:
+        case SPI_5:
             __HAL_RCC_SPI5_CLK_ENABLE();
             break;
-        case 6:
+        case SPI_6:
             __HAL_RCC_SPI6_CLK_ENABLE();
             break;
         default:
@@ -125,22 +125,22 @@ static void Mp1xxSpiHwInitCfg(struct Mp1xxSpiCntlr *stm32mp1)
 static void Mp1xxSpiHwExitCfg(struct Mp1xxSpiCntlr *stm32mp1)
 {
     switch (stm32mp1->busNum) {
-        case 1:
+        case SPI_1:
             __HAL_RCC_SPI1_CLK_DISABLE();
             break;
-        case 2:
+        case SPI_2:
             __HAL_RCC_SPI2_CLK_DISABLE();
             break;
-        case 3:
+        case SPI_3:
             __HAL_RCC_SPI3_CLK_DISABLE();
             break;
-        case 4:
+        case SPI_4:
             __HAL_RCC_SPI4_CLK_DISABLE();
             break;
-        case 5:
+        case SPI_5:
             __HAL_RCC_SPI5_CLK_DISABLE();
             break;
-        case 6:
+        case SPI_6:
             __HAL_RCC_SPI6_CLK_DISABLE();
             break;
         default:
@@ -182,7 +182,7 @@ static void Mp1xxSpiConfigClk(const struct Mp1xxSpiCntlr *stm32mp1, uint32_t clk
 
     clkDiv = clkDiv / MP1XX_SPI_MIN_CLK_DIV;
     for (mbr = 0; mbr <= MP1XX_SPI_MBR_MAX; mbr++) {
-        if (clkDiv >> mbr == 0) {
+        if ((clkDiv >> mbr) == 0) {
             mbr++;
             HDF_LOGE("%s:mbr=%u", __func__, mbr);
             break;
@@ -191,7 +191,6 @@ static void Mp1xxSpiConfigClk(const struct Mp1xxSpiCntlr *stm32mp1, uint32_t clk
 
     value = OSAL_READL(stm32mp1->regBase + MP1XX_SPI_CFG1_OFFSET);
     value &= ~MP1XX_SPI_MBR_MASK;
-    //value |= mbr << MP1XX_SPI_MBR_SHIFT;
     OSAL_WRITEL(value, stm32mp1->regBase + MP1XX_SPI_CFG1_OFFSET);
 }
 
@@ -350,7 +349,7 @@ static int32_t Mp1xxSpiFlushFifo(const struct Mp1xxSpiCntlr *stm32mp1)
 static inline uint8_t Mp1xxSpiToByteWidth(uint8_t bitsPerWord)
 {
     if (bitsPerWord <= BITS_PER_WORD_EIGHT) {
-        return MP1XX_ONE_BYTE; 
+        return MP1XX_ONE_BYTE;
     } else {
         return MP1XX_TWO_BYTE;
     }
@@ -460,7 +459,7 @@ static int32_t Mp1xxSpiTxRx(const struct Mp1xxSpiCntlr *stm32mp1, const struct S
         if (ret != HDF_SUCCESS) {
             HDF_LOGE("%s: %s timeout", __func__, (stm32mp1->transferMode != SPI_POLLING_TRANSFER) ?
                 "wait rx fifo int" : "wait tx fifo idle");
-                
+
             return ret;
         }
         Mp1xxSpiReadFifo(stm32mp1, rx, tmpLen);
@@ -490,8 +489,9 @@ static struct SpiDev *Mp1xxSpiFindDeviceByCsNum(const struct Mp1xxSpiCntlr *stm3
     if (stm32mp1 == NULL || stm32mp1->numCs <= cs) {
         return NULL;
     }
-    DLIST_FOR_EACH_ENTRY_SAFE(dev, tmpDev, &(stm32mp1->deviceList), struct SpiDev, list) {
-        if (dev->csNum  == cs) {
+    DLIST_FOR_EACH_ENTRY_SAFE(dev, tmpDev, &(stm32mp1->deviceList), struct SpiDev, list)
+    {
+        if (dev->csNum == cs) {
             break;
         }
     }
@@ -688,7 +688,8 @@ static void Mp1xxSpiRelease(struct Mp1xxSpiCntlr *stm32mp1)
     struct SpiDev *dev = NULL;
     struct SpiDev *tmpDev = NULL;
 
-    DLIST_FOR_EACH_ENTRY_SAFE(dev, tmpDev, &(stm32mp1->deviceList), struct SpiDev, list) {
+    DLIST_FOR_EACH_ENTRY_SAFE(dev, tmpDev, &(stm32mp1->deviceList), struct SpiDev, list)
+    {
         SpiRemoveDev(dev);
         DListRemove(&(dev->list));
         OsalMemFree(dev);
@@ -830,7 +831,6 @@ static int32_t Mp1xxSpiInit(struct SpiCntlr *cntlr, const struct HdfDeviceObject
         return HDF_FAILURE;
     }
 
-
     ret = SpiGetRegCfgFromHcs(stm32mp1, device->property);
     if (ret != HDF_SUCCESS) {
         HDF_LOGE("%s: SpiGetRegCfgFromHcs error", __func__);
@@ -856,7 +856,7 @@ static int32_t Mp1xxSpiInit(struct SpiCntlr *cntlr, const struct HdfDeviceObject
         HDF_LOGE("%s: sem init fail", __func__);
         return ret;
     }
-    
+
     if (stm32mp1->irqNum != 0) {
         OSAL_WRITEL(SPI_ALL_IRQ_DISABLE, stm32mp1->regBase + MP1XX_SPI2S_IER_OFFSET);
         ret = OsalRegisterIrq(stm32mp1->irqNum, 0, Mp1xxSpiIrqHandleNoShare, "SPI_MP1XX", stm32mp1);

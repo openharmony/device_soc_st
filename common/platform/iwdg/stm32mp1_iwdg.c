@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2021 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
 #define BITS_PER_LONG 32
 
 #define GENMASK(h, l) \
-	(((~0UL) << (l)) & (~0UL >> (BITS_PER_LONG - 1 - (h))))
+    (((~0UL) << (l)) & (~0UL >> (BITS_PER_LONG - 1 - (h))))
 
 /* IWDG registers */
 #define IWDG_KR		0x00 /* Key register */
@@ -73,41 +73,42 @@
  */
 static inline int generic_fls(int x)
 {
-	int r = 32;
+    int r = 32;
 
-	if (!x)
-		return 0;
-	if (!(x & 0xffff0000u)) {
-		x <<= 16;
-		r -= 16;
-	}
-	if (!(x & 0xff000000u)) {
-		x <<= 8;
-		r -= 8;
-	}
-	if (!(x & 0xf0000000u)) {
-		x <<= 4;
-		r -= 4;
-	}
-	if (!(x & 0xc0000000u)) {
-		x <<= 2;
-		r -= 2;
-	}
-	if (!(x & 0x80000000u)) {
-		x <<= 1;
-		r -= 1;
-	}
-	return r;
+    if (!x) {
+        return 0;
+    }
+    if (!(x & 0xffff0000u)) {
+        x <<= 16;
+        r -= 16;
+    }
+    if (!(x & 0xff000000u)) {
+        x <<= 8;
+        r -= 8;
+    }
+    if (!(x & 0xf0000000u)) {
+        x <<= 4;
+        r -= 4;
+    }
+    if (!(x & 0xc0000000u)) {
+        x <<= 2;
+        r -= 2;
+    }
+    if (!(x & 0x80000000u)) {
+        x <<= 1;
+        r -= 1;
+    }
+    return r;
 }
 
 static inline int ilog2(unsigned int x)
 {
-	return generic_fls(x) - 1;
+    return generic_fls(x) - 1;
 }
 
 unsigned long roundup_pow_of_two(unsigned long n)
 {
-	return 1UL << generic_fls(n - 1);
+    return 1UL << generic_fls(n - 1);
 }
 
 struct Mp1xxIwdg {
@@ -132,7 +133,7 @@ struct Mp1xxIwdg {
 
 static inline uint32_t reg_read(void volatile *base, uint32_t reg)
 {
-	return OSAL_READL((uintptr_t)base + reg);
+    return OSAL_READL((uintptr_t)base + reg);
 }
 
 static inline void reg_write(void volatile *base, uint32_t reg, uint32_t val)
@@ -140,7 +141,7 @@ static inline void reg_write(void volatile *base, uint32_t reg, uint32_t val)
     OSAL_WRITEL(val, (uintptr_t)base + reg);
 }
 
-// TODO : get clock source real rate
+// get clock source real rate
 static inline int32_t Mp1xxIwdgGetClockRate(struct Mp1xxIwdg *iwdg)
 {
     int ret = HDF_SUCCESS;
@@ -188,30 +189,28 @@ int32_t Mp1xxIwdgStart(struct WatchdogCntlr *wdt)
     presc = DIV_ROUND_UP(tout * iwdg->rate, RLR_MAX + 1);
 
     /* The prescaler is align on power of 2 and start at 2 ^ PR_SHIFT. */
-	presc = roundup_pow_of_two(presc);
-	iwdg_pr = (presc <= (1 << PR_SHIFT)) ? 0 : ilog2(presc) - PR_SHIFT;
-	iwdg_rlr = ((tout * iwdg->rate) / presc) - 1;
+    presc = roundup_pow_of_two(presc);
+    iwdg_pr = (presc <= (1 << PR_SHIFT)) ? 0 : ilog2(presc) - PR_SHIFT;
+    iwdg_rlr = ((tout * iwdg->rate) / presc) - 1;
 
     /* enable write access */
-	reg_write(iwdg->base, IWDG_KR, KR_KEY_EWA);
+    reg_write(iwdg->base, IWDG_KR, KR_KEY_EWA);
 
     /* set prescaler & reload registers */
-	reg_write(iwdg->base, IWDG_PR, iwdg_pr);
-	reg_write(iwdg->base, IWDG_RLR, iwdg_rlr);
-	reg_write(iwdg->base, IWDG_KR, KR_KEY_ENABLE);
+    reg_write(iwdg->base, IWDG_PR, iwdg_pr);
+    reg_write(iwdg->base, IWDG_RLR, iwdg_rlr);
+    reg_write(iwdg->base, IWDG_KR, KR_KEY_ENABLE);
 
     // 等待状态寄存器 SR_PVU | SR_RVU 复位
-    while ((iwdg_sr = Mp1xxIwdgGetSr(iwdg)) & (SR_PVU | SR_RVU))
-    {
-        // OsalMSleep(10);
-        if(!(--i)) {
+    while ((iwdg_sr = Mp1xxIwdgGetSr(iwdg)) & (SR_PVU | SR_RVU)) {
+        if (!(--i)) {
             HDF_LOGE("Fail to set prescaler, reload regs.");
             return HDF_FAILURE;
         }
     }
 
     /* reload watchdog */
-	reg_write(iwdg->base, IWDG_KR, KR_KEY_RELOAD);
+    reg_write(iwdg->base, IWDG_KR, KR_KEY_RELOAD);
 
     /* iwdg start */
     iwdg->start = true;
@@ -247,7 +246,7 @@ int32_t Mp1xxIwdgGetTimeout(struct WatchdogCntlr *wdt, uint32_t *seconds)
     iwdg = (struct Mp1xxIwdg *)wdt->priv;
 
     *seconds = iwdg->seconds;
-    
+
     return HDF_SUCCESS;
 }
 
@@ -303,7 +302,7 @@ static int32_t Mp1xxIwdgGetPriv(struct WatchdogCntlr *wdt)
 
     // 计算最大最小的超时时间
     iwdg->min_timeout = DIV_ROUND_UP((RLR_MIN + 1) * PR_MIN, iwdg->rate);
-	iwdg->max_hw_heartbeat_ms = ((RLR_MAX + 1) * 1024 * 1000) / iwdg->rate;
+    iwdg->max_hw_heartbeat_ms = ((RLR_MAX + 1) * 1024 * 1000) / iwdg->rate;
 
     return ret;
 }
@@ -375,7 +374,6 @@ static int32_t Mp1xxIwdgReadDrs(struct Mp1xxIwdg *iwdg, const struct DeviceResou
 
     // start
     iwdg->start = drsOps->GetBool(node, "start");
-
 
     return HDF_SUCCESS;
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2021 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@
 #define HDF_LOG_TAG Mp1xxUart
 
 #ifdef LOSCFG_QUICK_START
-__attribute__ ((section(".data"))) uint32_t g_uart_fputc_en = 0;
+__attribute__((section(".data"))) uint32_t g_uart_fputc_en = 0;
 #else
-__attribute__ ((section(".data"))) uint32_t g_uart_fputc_en = 1;
+__attribute__((section(".data"))) uint32_t g_uart_fputc_en = 1;
 #endif
 
 static SPIN_LOCK_INIT(g_uartOutputSpin);
@@ -59,7 +59,6 @@ static uint32_t stm32mp1_uart_recv_data_handle(struct Mp1xxUart *uart, char *buf
 
     // write data to recv buf
     ret = KRecvBufWrite(&(rx_ctl->rx_krb), buf, size);
-
     // if write success, post sem
     if (ret != 0)
         OsalSemPost(&(rx_ctl->rx_sem));
@@ -124,7 +123,7 @@ static int32_t stm32mp1_uart_config(struct Mp1xxUart *uart)
     return ret;
 }
 
-// TODO : get clock source real rate
+// get clock source real rate
 static inline int32_t Mp1xxUartGetClock(struct Mp1xxUart *uart)
 {
     int ret = HDF_SUCCESS;
@@ -207,7 +206,9 @@ static int32_t Mp1xxUartClose(struct UartHost *host)
 
     OsalSpinLock(&(uart->lock));
 
-    if (--uart->open_count > 0) goto stm32mp1_uart_close_out;
+    if (--uart->open_count > 0) {
+        goto stm32mp1_uart_close_out;
+    }
 
     // 失能设备
     Mp1xxUartHwEnable(uart, false);
@@ -242,9 +243,8 @@ static int32_t Mp1xxUartRead(struct UartHost *host, uint8_t *data, uint32_t size
     }
 
     // 如果缓冲区中没有数据可以读取, 且当前是阻塞模式, 等待数据接收
-    while ((KRecvBufUsedSize(&(rx_ctl->rx_krb)) == 0) 
-                && (uart->flags & UART_FLG_RD_BLOCK)) 
-    {
+    while ((KRecvBufUsedSize(&(rx_ctl->rx_krb)) == 0)
+                && (uart->flags & UART_FLG_RD_BLOCK)) {
         OsalSpinUnlock(&(uart->lock));
         OsalSemWait(&(rx_ctl->rx_sem), OSAL_WAIT_FOREVER);
         OsalSpinLock(&(uart->lock));
@@ -285,10 +285,9 @@ static int32_t Mp1xxUartWrite(struct UartHost *host, uint8_t *data, uint32_t siz
         goto stm32mp1_uart_write_out;
     }
 
-    while (send_size < size)
-    {
+    while (send_size < size) {
         // 获取本次传输的大小
-        cur_size = ((size - send_size) >= TX_BUF_SIZE)?TX_BUF_SIZE:(size - send_size);
+        cur_size = ((size - send_size) >= TX_BUF_SIZE) ? TX_BUF_SIZE : (size - send_size);
 
         ret = LOS_CopyToKernel((void *)uart->tx_buf, TX_BUF_SIZE, (void *)(data + send_size), cur_size);
         if (ret != 0) {
@@ -316,13 +315,13 @@ stm32mp1_uart_write_out:
 static int32_t Mp1xxUartGetBaud(struct UartHost *host, uint32_t *baudRate)
 {
     int32_t ret = HDF_SUCCESS;
-    struct Mp1xxUart *uart =NULL;
+    struct Mp1xxUart *uart = NULL;
     if (host == NULL || host->priv == NULL || baudRate == NULL) {
         HDF_LOGE("%s: invalid parameter", __func__);
         return HDF_ERR_INVALID_PARAM;
     }
     uart = (struct Mp1xxUart *)host->priv;
-    
+
     OsalSpinLock(&(uart->lock));
 
     if (uart->state != UART_STATE_USEABLE) {
@@ -411,7 +410,7 @@ static int32_t Mp1xxUartSetAttribute(struct UartHost *host, struct UartAttribute
 
     // 根据新配置，更新寄存器
     ret = stm32mp1_uart_config(uart);
-    dprintf("%s--------%d\r\n",__func__,ret);
+
     OsalSpinUnlock(&(uart->lock));
     return ret;
 }
@@ -424,18 +423,17 @@ static int32_t Mp1xxUartSetTransMode(struct UartHost *host, enum UartTransMode m
 
     OsalSpinLock(&(uart->lock));
 
-    switch (mode)
-    {
-    case UART_MODE_RD_BLOCK:
-        uart->flags |= UART_FLG_RD_BLOCK;
-        break;
-    case UART_MODE_RD_NONBLOCK:
-        uart->flags &= ~UART_FLG_RD_BLOCK;
-        OsalSemPost(&(rx_ctl->rx_sem));
-        break;
-    default:
-        HDF_LOGE("%s: unsupport mode %#x.\r\n", __func__, mode);
-        break;
+    switch (mode) {
+        case UART_MODE_RD_BLOCK:
+            uart->flags |= UART_FLG_RD_BLOCK;
+            break;
+        case UART_MODE_RD_NONBLOCK:
+            uart->flags &= ~UART_FLG_RD_BLOCK;
+            OsalSemPost(&(rx_ctl->rx_sem));
+            break;
+        default:
+            HDF_LOGE("%s: unsupport mode %#x.\r\n", __func__, mode);
+            break;
     }
 
     OsalSpinUnlock(&(uart->lock));
@@ -503,7 +501,7 @@ static int32_t stm32mp1_uart_read_drs(struct Mp1xxUart *uart, const struct Devic
     }
 
     // rx_buf_size
-    ret = drsOps->GetUint32(node, "rx_buf_size", &uart->rx_buf_size, 4096);
+    ret = drsOps->GetUint32(node, "rx_buf_size", &uart->rx_buf_size, RX_BUF_SIZE);
     if (ret != HDF_SUCCESS) {
         HDF_LOGE("%s: read rx_buf_size fail!\r\n", __func__);
         return ret;

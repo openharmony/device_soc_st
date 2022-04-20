@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2022 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 #define PSCI_FN_CPU_ON (0x84000003)
 int Mp1SmpSecCoreOn(unsigned int cpuid, unsigned int entry_point)
 {
-	unsigned int fn = PSCI_FN_CPU_ON;
-    struct smp_res res = {0};
+    unsigned int fn = PSCI_FN_CPU_ON;
+    struct smp_res res = { 0 };
     smp_smc(fn, cpuid, entry_point, 0, 0, 0, 0, 0, &res);
     return res.a0;
 }

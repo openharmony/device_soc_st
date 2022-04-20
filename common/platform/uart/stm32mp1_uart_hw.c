@@ -32,18 +32,18 @@
 #define USART_TDR		(0x28)
 #define USART_PRESC     (0x2C)
 
-#define USART_CR1_EN        BIT(0) // 串口使能
-#define USART_CR1_RE        BIT(2) // 串口接收使能
-#define USART_CR1_TE        BIT(3) // 串口发送使能
-#define USART_CR1_RXNEIE    BIT(5) // 串口接收中断使能
-#define USART_CR1_FIFOEN    BIT(29)// fifo模式使能
+#define USART_CR1_EN        BIT(0)  // 串口使能
+#define USART_CR1_RE        BIT(2)  // 串口接收使能
+#define USART_CR1_TE        BIT(3)  // 串口发送使能
+#define USART_CR1_RXNEIE    BIT(5)  // 串口接收中断使能
+#define USART_CR1_FIFOEN    BIT(29) // fifo模式使能
 
 #define USART_ISR_TXE   BIT(7) // 该位为 1 表示可以写
 #define USART_ISR_RXNE  BIT(5) // 该位为 1 表示可读
 
 /* Parity control enable */
 #define USART_CR1_PCE       BIT(10) // 串口校验使能
-#define USART_CR1_PS			BIT(9)  
+#define USART_CR1_PS        BIT(9)
 
 /* word length */
 #define USART_CR1_M0        BIT(12)
@@ -222,7 +222,6 @@ int32_t Mp1xxUartHwParity(struct Mp1xxUart *uart, uint32_t parity)
 
     switch (parity) {
         case UART_HW_PARITY_NONE:
-            // val = val;
             break;
 
         // if enable parity, use 9 bit mode
@@ -276,11 +275,11 @@ uint32_t Mp1xxUartIrqHandler(uint32_t irq, void *data)
             if (CheckMagicKey(buf[count - 1], CONSOLE_SERIAL)) {
                 goto end;
             }
-
         } while ((Mp1xxUartHwGetIsr(uart) & USART_ISR_RXNE) && (max_count-- > 0));
 
-        if (rx_ctl->stm32mp1_uart_recv_hook)
+        if (rx_ctl->stm32mp1_uart_recv_hook) {
             rx_ctl->stm32mp1_uart_recv_hook(uart, buf, count);
+        }
     }
 
 end:

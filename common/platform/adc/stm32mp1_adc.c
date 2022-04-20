@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2022 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ static void Mp1xxAdcPinInit(struct Mp1xxAdcDevice *stm32mp1)
         if (stm32mp1->validChannel[i] == 0 || stm32mp1->pins[i * MP1_ADC_PIN_DATA_WIDTH] >= MP1XX_GPIO_GROUP_NUMBER) {
             continue;
         }
-        
+
         value = OSAL_READL(gpioBase);
         value |= (MP1XX_GPIO_ANALOG_MODE_MASK << MP1XX_GPIO_REG_PIN_SHIFT);
         OSAL_WRITEL(value, MP1XX_GPIO_BASE + MP1XX_GPIO_MODE_REG_OFFSET);
@@ -77,8 +77,8 @@ static inline void Mp1xxAdcSetSampleTime(struct Mp1xxAdcDevice *stm32mp1)
     uint32_t i;
 
     sampleTime = 0;
-    for (i = 0; i <MP1XX_CHANNLE_NUM_PER_REG; i++) {
-            sampleTime |= (stm32mp1->sampleTime & MP1XX_SAMPLE_TIME_MASK) << (i * MP1XX_SAMPLE_TIME_BITS);
+    for (i = 0; i < MP1XX_CHANNLE_NUM_PER_REG; i++) {
+        sampleTime |= (stm32mp1->sampleTime & MP1XX_SAMPLE_TIME_MASK) << (i * MP1XX_SAMPLE_TIME_BITS);
     }
     OSAL_WRITEL(sampleTime, stm32mp1->regBase + MP1XX_ADC_SMPR1_OFFSET);
     OSAL_WRITEL(sampleTime, stm32mp1->regBase + MP1XX_ADC_SMPR2_OFFSET);
@@ -87,7 +87,7 @@ static inline void Mp1xxAdcSetSampleTime(struct Mp1xxAdcDevice *stm32mp1)
 static void Mp1xxAdcCalibration(struct Mp1xxAdcDevice *stm32mp1)
 {
     uint32_t value;
-    uint32_t delay  = 0;
+    uint32_t delay = 0;
 
     OSAL_WRITEL(0, stm32mp1->regBase + MP1XX_ADC_CR_OFFSET);
     OSAL_WRITEL(MP1XX_ADC_REGULATOR_EN, stm32mp1->regBase + MP1XX_ADC_CR_OFFSET);
@@ -196,8 +196,6 @@ static inline void Mp1xxAdcSetSequence(struct Mp1xxAdcDevice *stm32mp1, uint32_t
     value = 0x1U << channel;
     OSAL_WRITEL(value, stm32mp1->regBase + MP1XX_ADC_PCSEL_OFFSET);
 }
-
-
 
 static int32_t Mp1xxAdcRead(struct AdcDevice *device, uint32_t channel, uint32_t *val)
 {
@@ -363,7 +361,8 @@ static int32_t Mp1xxAdcInit(struct HdfDeviceObject *device)
     }
 
     ret = HDF_SUCCESS;
-    DEV_RES_NODE_FOR_EACH_CHILD_NODE(device->property, childNode) {
+    DEV_RES_NODE_FOR_EACH_CHILD_NODE(device->property, childNode)
+    {
         ret = Mp1xxAdcParseInit(device, childNode);
         if (ret != HDF_SUCCESS) {
             break;
@@ -412,7 +411,8 @@ static void Mp1xxAdcRelease(struct HdfDeviceObject *device)
         HDF_LOGE("%s: device or property is null", __func__);
         return;
     }
-    DEV_RES_NODE_FOR_EACH_CHILD_NODE(device->property, childNode) {
+    DEV_RES_NODE_FOR_EACH_CHILD_NODE(device->property, childNode)
+    {
         Mp1xxAdcRemoveByNode(childNode);
     }
 }

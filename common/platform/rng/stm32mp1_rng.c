@@ -28,8 +28,7 @@ static void RngInitDev(void)
 {
     RngHandle.Instance = (RNG_TypeDef *)OsalIoRemap(RNG1_BASE, 0x400);
     /* Initialize the RNG peripheral */
-    if (HAL_RNG_Init(&RngHandle) != HAL_OK)
-    {
+    if (HAL_RNG_Init(&RngHandle) != HAL_OK) {
         /* Initialization Error */
         HDF_LOGE("%s: rng init fail!", __func__);
     }
@@ -38,13 +37,11 @@ static void RngInitDev(void)
 static void RngDeInitDev(void)
 {
     /* Initialize the RNG peripheral */
-    if (HAL_RNG_DeInit(&RngHandle) != HAL_OK)
-    {
+    if (HAL_RNG_DeInit(&RngHandle) != HAL_OK) {
         /* Initialization Error */
         HDF_LOGE("%s: rng deinit fail!", __func__);
     }
 }
-
 
 /*
  * random_hw code
@@ -65,9 +62,7 @@ static void RngClose(void)
 
 static int RngRead(char *buffer, size_t bytes)
 {
-
-    if (HAL_RNG_GenerateRandomNumber(&RngHandle, (uint32_t *)buffer) != HAL_OK)
-    {
+    if (HAL_RNG_GenerateRandomNumber(&RngHandle, (uint32_t *)buffer) != HAL_OK) {
         /* Random number generation error */
         HDF_LOGE("%s: Random number generation fail!", __func__);
     }
@@ -102,7 +97,6 @@ void HiRandomHwInit(void)
 }
 void HiRandomHwDeinit(void)
 {
-
 }
 int HiRandomHwGetInteger(unsigned *result)
 {
