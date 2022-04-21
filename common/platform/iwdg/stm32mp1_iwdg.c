@@ -30,33 +30,33 @@
     (((~0UL) << (l)) & (~0UL >> (BITS_PER_LONG - 1 - (h))))
 
 /* IWDG registers */
-#define IWDG_KR		0x00 /* Key register */
-#define IWDG_PR		0x04 /* Prescaler Register */
-#define IWDG_RLR	0x08 /* ReLoad Register */
-#define IWDG_SR		0x0C /* Status Register */
-#define IWDG_WINR	0x10 /* Windows Register */
+#define IWDG_KR     0x00 /* Key register */
+#define IWDG_PR     0x04 /* Prescaler Register */
+#define IWDG_RLR    0x08 /* ReLoad Register */
+#define IWDG_SR     0x0C /* Status Register */
+#define IWDG_WINR   0x10 /* Windows Register */
 
 /* IWDG_KR register bit mask */
-#define KR_KEY_RELOAD	0xAAAA /* reload counter enable */
-#define KR_KEY_ENABLE	0xCCCC /* peripheral enable */
-#define KR_KEY_EWA	0x5555 /* write access enable */
-#define KR_KEY_DWA	0x0000 /* write access disable */
+#define KR_KEY_RELOAD   0xAAAA /* reload counter enable */
+#define KR_KEY_ENABLE   0xCCCC /* peripheral enable */
+#define KR_KEY_EWA  0x5555 /* write access enable */
+#define KR_KEY_DWA  0x0000 /* write access disable */
 
 /* IWDG_PR register */
-#define PR_SHIFT	2
-#define PR_MIN		BIT(PR_SHIFT)
+#define PR_SHIFT    2
+#define PR_MIN      BIT(PR_SHIFT)
 
 /* IWDG_RLR register values */
-#define RLR_MIN		0x2		/* min value recommended */
-#define RLR_MAX		GENMASK(11, 0)	/* max value of reload register */
+#define RLR_MIN     0x2     /* min value recommended */
+#define RLR_MAX     GENMASK(11, 0)  /* max value of reload register */
 
 /* IWDG_SR register bit mask */
 #define SR_PVU	BIT(0) /* Watchdog prescaler value update */
 #define SR_RVU	BIT(1) /* Watchdog counter reload value update */
 
 /* set timeout to 100000 us */
-#define TIMEOUT_US	100000
-#define SLEEP_US	1000
+#define TIMEOUT_US  100000
+#define SLEEP_US    1000
 
 #define DEFAULT_TIMEOUT             (32)
 #define DEFAULT_TASK_STACK_SIZE     (0x800)
@@ -176,7 +176,7 @@ int32_t Mp1xxIwdgStart(struct WatchdogCntlr *wdt)
     iwdg = (struct Mp1xxIwdg *)wdt->priv;
 
     // 计算装载值
-    tout = iwdg->seconds;// 超时秒数
+    tout = iwdg->seconds; // 超时秒数
 
     // 计算边界
     if (tout > (iwdg->max_hw_heartbeat_ms * 1000)) {

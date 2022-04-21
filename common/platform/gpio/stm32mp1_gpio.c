@@ -505,7 +505,7 @@ static int32_t GpioDriverInit(struct HdfDeviceObject *device)
         HDF_LOGE("%s: device or property NULL!", __func__);
         return HDF_ERR_INVALID_OBJECT;
     }
-    //获取属性数据
+    // 获取属性数据
     ret = Mp1xxGpioReadDrs(stm32gpio, device->property);
     if (ret != HDF_SUCCESS) {
         HDF_LOGE("%s: get gpio device resource fail:%d", __func__, ret);
@@ -518,7 +518,7 @@ static int32_t GpioDriverInit(struct HdfDeviceObject *device)
                  stm32gpio->bitNum);
         return HDF_ERR_INVALID_PARAM;
     }
-    //寄存器地址映射
+    // 寄存器地址映射
     stm32gpio->regBase = OsalIoRemap(stm32gpio->gpioPhyBase, stm32gpio->groupNum * stm32gpio->gpioRegStep);
     if (stm32gpio->regBase == NULL) {
         HDF_LOGE("%s: err remap phy:0x%x", __func__, stm32gpio->gpioPhyBase);

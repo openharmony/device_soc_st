@@ -370,9 +370,7 @@ static int32_t Mp1xxI2cParseAndInit(struct HdfDeviceObject *device, const struct
         (void)OsalSpinDestroy(&stm32mp1->spin);
         goto __ERR__;
     }
-//#ifdef USER_VFS_SUPPORT
     (void)I2cAddVfsById(stm32mp1->cntlr.busId);
-//#endif
     return HDF_SUCCESS;
 __ERR__:
     if (stm32mp1 != NULL) {
