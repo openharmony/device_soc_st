@@ -89,7 +89,7 @@
                     priority = 10;
                     permission = 0644;
                     moduleName = "HDF_PLATFORM_SDMMC";
-                    serviceName = "HDF_PLATFORM_MMC_2";
+                    serviceName = "HDF_PLATFORM_MMC_0";
                     deviceMatchAttr = "st_stm32mp1_sdmmc_emmc";
                 }
                 device1 :: deviceNode {
@@ -105,7 +105,7 @@
                     priority = 30;
                     permission = 0644;
                     moduleName = "HDF_PLATFORM_SDMMC";
-                    serviceName = "HDF_PLATFORM_MMC_3";
+                    serviceName = "HDF_PLATFORM_MMC_2";
                     deviceMatchAttr = "st_stm32mp1_sdmmc_sdio";
                 }
             }
