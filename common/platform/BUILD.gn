@@ -11,20 +11,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//drivers/adapter/khdf/liteos/hdf.gni")
+import("//drivers/hdf_core/adapter/khdf/liteos/hdf.gni")
 
 group("drivers") {
   deps = [
     "adc",
-    "spi",
     "gpio",
     "i2c",
     "iwdg",
-    "uart",
     "pwm",
     "rng",
     "smp",
+    "spi",
     "stm32mp1xx_hal",
+    "uart",
     "wlan:wifi_firmware",
   ]
 }
@@ -33,14 +33,14 @@ config("public") {
   lib_dirs = [ "//device/soc/st/common/platform/libs/ohos/llvm/stm32mp1xx" ]
   ldflags = [ "-Wl,--push-state,--whole-archive" ]
 
-    ldflags += [ "-lltdc" ]
-if (defined(LOSCFG_DRIVERS_MMC)) {
+  ldflags += [ "-lltdc" ]
+  if (defined(LOSCFG_DRIVERS_MMC)) {
     ldflags += [ "-lmmc" ]
   }
-if (defined(LOSCFG_DRIVERS_HDF_WIFI)) {
+  if (defined(LOSCFG_DRIVERS_HDF_WIFI)) {
     ldflags += [ "-lhdf_vendor_wifi" ]
   }
-if (defined(LOSCFG_DRIVERS_HDF_WIFI) && defined(LOSCFG_DRIVERS_HI3881)) {
+  if (defined(LOSCFG_DRIVERS_HDF_WIFI) && defined(LOSCFG_DRIVERS_HI3881)) {
     ldflags += [ "-lhi3881" ]
   }
 }

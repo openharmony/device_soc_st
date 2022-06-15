@@ -1,4 +1,4 @@
-include $(LITEOSTOPDIR)/../../drivers/adapter/khdf/liteos/lite.mk
+include $(LITEOSTOPDIR)/../../drivers/hdf_core/adapter/khdf/liteos/lite.mk
 MODULE_NAME := $(notdir $(shell pwd))
 
 ifdef LOSCFG_HW_RANDOM_ENABLE

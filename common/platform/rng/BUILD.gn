@@ -27,17 +27,13 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import("//drivers/adapter/khdf/liteos/hdf.gni")
+import("//drivers/hdf_core/adapter/khdf/liteos/hdf.gni")
 
 module_name = get_path_info(rebase_path("."), "name")
 hdf_driver(module_name) {
-
   if (defined(LOSCFG_HW_RANDOM_ENABLE)) {
     sources = [ "stm32mp1_rng.c" ]
 
-    include_dirs = [
-    "../stm32mp1xx_hal/STM32MP1xx_HAL_Driver/Inc",
-
-    ]
+    include_dirs = [ "../stm32mp1xx_hal/STM32MP1xx_HAL_Driver/Inc" ]
   }
 }
