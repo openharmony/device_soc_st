@@ -11,14 +11,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import("//drivers/adapter/khdf/liteos/hdf.gni")
+import("//drivers/hdf_core/adapter/khdf/liteos/hdf.gni")
 
 module_switch = defined(LOSCFG_KERNEL_SMP)
 hdf_driver("smp") {
   sources = [
+    "smccc-call.S",
     "stm32mp1_smp.c",
-    "smccc-call.S"
   ]
 }
 

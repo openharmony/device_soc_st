@@ -11,26 +11,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//drivers/adapter/khdf/liteos/hdf.gni")
+import("//drivers/hdf_core/adapter/khdf/liteos/hdf.gni")
 module_name = "hdf_stm32mp1xx_hal"
 hdf_driver(module_name) {
   sources = [
-    "STM32MP1xx_HAL_Driver/Src/system_stm32mp1xx.c",
     "STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal.c",
+    "STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_exti.c",
     "STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_gpio.c",
     "STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_i2c.c",
-    "STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_exti.c",
     "STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_ltdc.c",
     "STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_rcc.c",
     "STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_rcc_ex.c",
     "STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_rng.c",
     "STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_tim.c",
     "STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_tim_ex.c",
-
+    "STM32MP1xx_HAL_Driver/Src/system_stm32mp1xx.c",
   ]
   include_dirs = [
     ".",
     "STM32MP1xx_HAL_Driver/Inc",
-
   ]
 }

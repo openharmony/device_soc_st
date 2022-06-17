@@ -11,16 +11,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//drivers/adapter/khdf/liteos/hdf.gni")
+import("//drivers/hdf_core/adapter/khdf/liteos/hdf.gni")
 
 module_switch = defined(LOSCFG_DRIVERS_HDF_PLATFORM_GPIO)
 hdf_driver("hdf_gpio") {
-    sources = [
-    "stm32mp1_gpio.c",
-  ]
-    include_dirs = [
-     "." ,
+  sources = [ "stm32mp1_gpio.c" ]
+  include_dirs = [
+    ".",
     "../stm32mp1xx_hal/STM32MP1xx_HAL_Driver/Inc",
-
   ]
 }
