@@ -63,9 +63,11 @@
             <filefilter name="defaultFilter" desc="Files not to check">
                 <filteritem type="filepath" name="common/platform/libs/ohos/llvm/stm32mp1xx/End User License Agreement.md" desc=""/>
                 <filteritem type="filepath" name="stm32f4xx/sdk/.*" desc="引用上游stm32f4xx/sdk代码"/>
-                
             </filefilter>
-            <filefilter name="defaultPolicyFilter" desc="Filters for compatibility，license header policies">
+            <filefilter name="defaultFilter" desc="Files not to check">
+                <filteritem type="filepath" name="stm32f407zg/.*" desc=""/>
+            </filefilter>
+            <filefilter name="defaultPolicyFilter" desc="Filters for compatibility, license header policies">
                 <filteritem type="filepath" name="common/platform/stm32mp1xx_hal/STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_tim.c" desc=""/>
                 <filteritem type="filepath" name="common/platform/stm32mp1xx_hal/STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_i2c.c" desc=""/>
                 <filteritem type="filepath" name="common/platform/stm32mp1xx_hal/STM32MP1xx_HAL_Driver/Src/stm32mp1xx_hal_ltdc.c" desc=""/>
