@@ -225,7 +225,7 @@ u8 LwipInit(void)
 
 	netifInitFlag = netif_add(&lwip_netif, &ipaddr, &netmask, &gw,
 							  NULL, &EthernetifInit, &tcpip_input);
-	if (netifInitFlag = NULL) {
+	if (netifInitFlag == NULL) {
 		printf("		netif_add failed!!!\n\r");
 	}
     netif_set_default(&lwip_netif);
