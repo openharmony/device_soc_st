@@ -28,10 +28,10 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "lwip.h"
 #include "prt_task.h"
 #include "prt_config.h"
 #include "lwip/netif.h"
-#include "lwip.h"
 #include "securec.h"
 
 #define BAUDRATE        115200
@@ -106,9 +106,17 @@ static void ShowTaskInfo(void)
 static void OsTskUser1(void)
 {
     printf("OsTskUser:\n\r");
-
     while (TRUE) {
         printf("OsTskUser1 loop\n\r");
+        printf("LWIP_DHCP = %d\n\r", LWIP_DHCP);
+#if (LWIP_DHCP == 1)
+        U32 ip = lwip_netif.ip_addr.u_addr.ip4.addr;
+        U32 ip3 = (uint8_t)(ip >> 24);
+        U32 ip2 = (uint8_t)(ip >> 16);
+        U32 ip1 = (uint8_t)(ip >> 8);
+        U32 ip0 = (uint8_t)(ip);
+        printf("IP.......%d.%d.%d.%d\r\n", ip0, ip1, ip2, ip3);
+#endif
         PRT_TaskDelay(DELAY_TIME);
     }
 }
