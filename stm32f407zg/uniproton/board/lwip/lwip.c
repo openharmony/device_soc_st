@@ -1,54 +1,38 @@
 /*
- * Copyright (c) 2022-2022 Huawei Device Co., Ltd. All rights reserved.
+ * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
+ * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+ * You may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at:
  *
- * 1. Redistributions of source code must retain the above copyright notice, this list of
- *    conditions and the following disclaimer.
+ *        http://www.st.com/software_license_agreement_liberty_v2
  *
- * 2. Redistributions in binary form must reproduce the above copyright notice, this list
- *    of conditions and the following disclaimer in the documentation and/or other materials
- *    provided with the distribution.
- *
- * 3. Neither the name of the copyright holder nor the names of its contributors may be used
- *    to endorse or promote products derived from this software without specific prior written
- *    permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 #include "lwip.h"
+#include "usart.h"
+#include "ethernetif.h"
+#include "stm32f4xx.h"
 #include "netif/etharp.h"
 #include "lwip/dhcp.h"
-#include "ethernetif.h"
 #include "lwip/timeouts.h"
 #include "lwip/tcp.h"
 #include "lwip/ip4_frag.h"
 #include "lwip/tcpip.h"
-#include "usart.h"
-#include <stdio.h>
+#include "lwip/priv/tcp_priv.h"
+#include "lwip/netifapi.h"
+#include "lwip/netif.h"
+#include "lwipopts.h"
 #include "prt_module.h"
 #include "prt_task.h"
-#include "lwip/priv/tcp_priv.h"
-#include "lwipopts.h"
-#include "lwip/netifapi.h"
-#include "stm32f4xx.h"
 #include "os_cpu_armv7_m_external.h"
 #include "prt_hwi.h"
-#include "lan8720.h"
-#include "lwip/netif.h"
-#include "lwip/dhcp.h"
+#include <stdio.h>
 
 #define NETIF_SETUP_OVERTIME       100
 
@@ -69,8 +53,6 @@ void LwipDhcpDelete(void)
 
 void LwipDhcpTask(void *pdata)
 {
-	uintptr_t intSave = PRT_HwiLock();
-
 	U32 ip = 0; /* 0, initial value */
 	U32 netmask = 0; /* 0, initial value */
 	U32 gw = 0; /* 0, initial value */
@@ -78,9 +60,9 @@ void LwipDhcpTask(void *pdata)
 	dhcp_start(&lwip_netif);
 
 	while(1) {
-		ip = lwip_netif.ip_addr.addr;
-		netmask	= lwip_netif.netmask.addr;
-		gw = lwip_netif.gw.addr;
+		ip = lwip_netif.ip_addr.u_addr.ip4.addr;
+		netmask	= lwip_netif.netmask.u_addr.ip4.addr;
+		gw = lwip_netif.gw.u_addr.ip4.addr;
 		struct dhcp *dhcp = netif_dhcp_data(&lwip_netif);
 
 		if(ip != 0) {
@@ -98,17 +80,16 @@ void LwipDhcpTask(void *pdata)
 			lwipdev.gateway[0] = (uint8_t)(gw);
 			break;
 		} else if (dhcp->tries > LWIP_MAX_DHCP_TRIES) {
-			IP4_ADDR(&(lwip_netif.ip_addr), lwipdev.ip[0],
+			IP4_ADDR(&(lwip_netif.ip_addr.u_addr.ip4), lwipdev.ip[0],
 					 lwipdev.ip[1], lwipdev.ip[2], lwipdev.ip[3]);
-			IP4_ADDR(&(lwip_netif.netmask), lwipdev.netmask[0],
+			IP4_ADDR(&(lwip_netif.netmask.u_addr.ip4), lwipdev.netmask[0],
 					 lwipdev.netmask[1], lwipdev.netmask[2],lwipdev.netmask[3]);
-			IP4_ADDR(&(lwip_netif.gw), lwipdev.gateway[0], lwipdev.gateway[1],
+			IP4_ADDR(&(lwip_netif.gw.u_addr.ip4), lwipdev.gateway[0], lwipdev.gateway[1],
 					 lwipdev.gateway[2], lwipdev.gateway[3]);
 			break;
 		}
 	}
 	LwipDhcpDelete();
-	PRT_HwiRestore(intSave);
 }
 
 U32 LwipDhcpCreate(void)
