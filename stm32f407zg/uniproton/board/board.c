@@ -28,22 +28,45 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "lwip.h"
 #include "prt_task.h"
 #include "prt_config.h"
+
+#ifndef DRIVERS_HDF
 #include "lwip/netif.h"
+#include "lwip.h"
+#endif
+
 #include "securec.h"
+
+#ifdef DRIVERS_HDF
+#include "devmgr_service_start.h"
+#endif
+
+#ifdef LOSCFG_DRIVERS_HDF_TESTS_ENABLE
+#include "file_test.h"
+#include "hdf_test_suit.h"
+#include "osal_all_test.h"
+#include "gpio_test.h"
+#include "i2c_test.h"
+#endif
 
 #define BAUDRATE        115200
 #define DELAY_TIME      1000
 
+#ifndef DRIVERS_HDF
 extern struct netif lwip_netif;
+#endif
+
 extern unsigned long g_data_start;
 extern unsigned long g_data_end;
 extern unsigned long data_load_start;
 
 extern void SystemInit(void);
+
+#ifndef DRIVERS_HDF
 extern u8 LwipInit(void);
+#endif
+
 extern S32 LfsLowLevelInit(void);
 extern void OHOS_SystemInit(void);
 
@@ -106,6 +129,18 @@ static void ShowTaskInfo(void)
 static void OsTskUser1(void)
 {
     printf("OsTskUser:\n\r");
+#ifdef LOSCFG_DRIVERS_HDF_TESTS_ENABLE
+    OsaTestBegin();
+    OsaTestEnd();
+    OsaTestALLResult();
+    HdfPlatformEntryTest();
+    HdfPlatformDeviceTest();
+    HdfPlatformDriverTest();
+    HdfPlatformManagerTest();
+    LfsTest();
+    HdfI2cTestAllEntry();
+    HdfGpioTestAllEntry();
+#endif
     while (TRUE) {
         printf("OsTskUser1 loop\n\r");
         printf("LWIP_DHCP = %d\n\r", LWIP_DHCP);
@@ -167,8 +202,9 @@ void TestTask(void)
     if (ret != OS_OK) {
         return ret;
     }
-
+#ifndef DRIVERS_HDF
     ret = PRT_TaskResume(taskId2);
+#endif
     if (ret != OS_OK) {
         return ret;
     }
@@ -177,11 +213,13 @@ void TestTask(void)
 U32 PRT_AppInit(void)
 {
     printf("PRT_AppInit!\n");
-
+#ifdef DRIVERS_HDF
+    DeviceManagerStart();
+#else
     FsInit();
 
     LwipInit();
-
+#endif
     OHOS_SystemInit();
     return OS_OK;
 }

@@ -157,11 +157,15 @@ SECTIONS
     .data : {
         __data_start = . ;
         g_data_start = . ;
+        KEEP (*(SORT_NONE(VECTOR)))
 
         *(.data .data.* .gnu.linkonce.d.*)
 
-        . = ALIGN(0x80);
-        KEEP (*(SORT_NONE(VECTOR)))
+        . = ALIGN(0x4);
+        _hdf_drivers_start = .;
+        KEEP(*(.hdf.driver))
+        _hdf_drivers_end = .; /* define a section for hdf driver */
+        
         __data_end = . ;
         g_data_end = . ;
     } > ram AT > flash

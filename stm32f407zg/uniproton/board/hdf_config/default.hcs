@@ -1,0 +1,33 @@
+#include "default_device_info.hcs"
+
+root {
+    platform {
+        gpio_config {
+            match_attr = "gpio_config";
+            pin = [0, 1, 2, 3, 4, 5, 6, 7, 8]; // pin index when register to hdf framework 0-3 spi flash gpio 4-5 uart1 7-8 i2c test
+            realPin = [9, 10, 8, 2, 3, 4, 0, 8, 9]; // pin number in stm32 led2 pe5, led3 pe6,
+            group = [5, 5, 5, 4, 4, 4, 0, 1, 1]; // group of gpio 0:GPIOA 1:GPIOB 2:GPIOC 3:GPIOD 4:GPIOE 5:GPIOF 6:GPIOG 7:GPIOH 8:GPIOI
+            mode = [1, 1, 1, 0, 0, 0, 0, 2, 2]; // 0: input 1: output 2:alternate 3:analog
+            speed = [3, 3, 3, 3, 3, 3, 3, 3, 3]; // 0: low 1: middle 2:high 3:very_high
+            type = [0, 0, 0, 0, 0, 0, 0, 1, 1]; // 0: pp 1:od
+            pinNum = 9;
+            pupd = [1, 1, 1, 1, 1, 1, 2, 0, 0]; // 0: nopull 1:up 2:down
+            alternate = [0, 0, 0, 0, 0, 0, 0, 4, 4];
+        }
+        i2c_config {
+            i2c1_config {
+                match_attr = "i2c1_config";
+                port = 1;
+                devMode = 0; //0 = master, 1 = slave
+                devAddr = 0;
+                speed = 100000;
+            }
+        }
+    }
+    misc {
+        test_config {
+            match_attr = "test_config";
+        }
+    }
+}
+
