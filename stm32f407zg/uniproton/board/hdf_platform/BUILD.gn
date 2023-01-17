@@ -26,61 +26,27 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import("//kernel/uniproton/uniproton.gni")
+import("//drivers/hdf_core/adapter/khdf/uniproton/hdf.gni")
 
-static_library("board_config") {
+module_switch = defined(LOSCFG_DRIVERS_HDF_PLATFORM_GPIO)
+module_name = get_path_info(rebase_path("."), "name")
+
+hdf_driver(module_name) {
   sources = [
-    "board.c",
-    "dprintf.c",
+    "src/ethernet_init.c",
+    "src/fs_init.c",
+    "src/gpio_stm32f407.c",
+    "src/i2c_stm32f407.c",
   ]
-  configs += [
-    "lwip:lwip_config",
-    "common:stm32_config",
-    "driver:driver_config",
-  ]
-  if (defined(DRIVERS_HDF)) {
-    configs += [ "//drivers/hdf_core/adapter/khdf/uniproton:hdf_config" ]
-  }
-}
 
-group("board") {
-  deps = [
-    ":board_config",
-    "common",
-    "driver",
-    "fs",
-    "lwip",
-  ]
-}
-
-config("public") {
   include_dirs = [
-    ".",
-    "//third_party/musl/porting/uniproton/kernel/include",
-  ]
-  include_dirs +=
-      KERNEL_LWIP_INCLUDE_DIRS + [ "//third_party/lwip/src/include" ]
-  ldflags = [
-    "-Wl,-T" + rebase_path("rtos.ld"),
-    "-Wl,-Llibs",
-    "--specs=nosys.specs",
+    "include",
+    "//device/soc/st/stm32f407zg/uniproton/board/common",
   ]
 
-  if (defined(LOSCFG_DRIVERS_HDF_TESTS_ENABLE)) {
-    include_dirs +=
-        [ "//drivers/hdf_core/framework/core/common/include/manager" ]
-  }
-  product_cfg = read_file("${product_config_path}/config.json", "json")
-  foreach(product_config, product_cfg.bin_list) {
-    ldflags += [ "-Wl,--whole-archive" ]
-    foreach(force_link_lib, product_config.force_link_libs) {
-      ldflags += [ "-l${force_link_lib}" ]
-    }
-    ldflags += [ "-Wl,--no-whole-archive" ]
-  }
-
-  libs = [
-    "nosys",
-    "gcc",
+  deps = [ "//device/soc/st/stm32f407zg/uniproton/board/hdf_config" ]
+  configs += [
+    "//device/soc/st/stm32f407zg/uniproton/board/common:stm32_config",
+    "//device/soc/st/stm32f407zg/uniproton/board/lwip:lwip_config",
   ]
 }

@@ -1,0 +1,81 @@
+root {
+    module = "alientek,stm32f407";
+    device_info {
+        match_attr = "hdf_manager";
+        template host {
+            hostName = "";
+            priority = 100;
+            template device {
+                template deviceNode {
+                    policy = 0;
+                    priority = 100;
+                    preload = 0;
+                    permission = 0664;
+                    moduleName = "";
+                    serviceName = "";
+                    deviceMatchAttr = "";
+                }
+            }
+        }
+
+        platform :: host {
+            hostName = "platform_host";
+            priority = 50;
+            device_gpio :: device {
+                gpio0 :: deviceNode {
+                    policy = 0;
+                    priority = 60;
+                    moduleName = "ST_GPIO_MODULE_HDF";
+                    serviceName = "HDF_PLATFORM_GPIO";
+                    deviceMatchAttr = "gpio_config";
+                }
+            }
+            device_i2c :: device {
+                i2c_manager :: deviceNode {
+                    policy = 2;
+                    priority = 50;
+                    moduleName = "HDF_PLATFORM_I2C_MANAGER";
+                    serviceName = "HDF_PLATFORM_I2C_MANAGER";
+                }
+
+                i2c1 :: deviceNode {
+                    policy = 0;
+                    priority = 100;
+                    moduleName = "ST_I2C_MODULE_HDF";
+                    serviceName = "HDF_PLATFORM_I2C_1";
+                    deviceMatchAttr = "i2c1_config";
+                }
+            }
+        }
+
+        misc :: host {
+            hostName = "misc_host";
+            priority = 100;
+            fs :: device {
+                littlefs :: deviceNode {
+                    policy = 0;
+                    priority = 100;
+                    moduleName = "HDF_FS_LITTLEFS";
+                    deviceMatchAttr = "littlefs_config";
+                }
+            }
+            ethernet :: device {
+                ethernet0 :: deviceNode {
+                    policy = 0;
+                    priority = 60;//priority优先级越低的越先被加载
+                    moduleName = "HDF_NET_ETHERNET";
+                    deviceMatchAttr = "ethernet_config";
+                }
+            }
+            test :: device {
+                test0 :: deviceNode {
+                    policy = 0;
+                    priority = 30;//priority优先级越低的越先被加载
+                    moduleName = "PLATFORM_TEST_DRIVER";
+                    deviceMatchAttr = "test_config";
+                }
+            }
+        }
+    }
+}
+

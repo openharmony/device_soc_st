@@ -100,8 +100,13 @@ extern unsigned int __heap_size;
 #define OS_INCLUDE_SEM                                  YES
 
 /* 最大支持的信号量数 */
+#ifdef LOSCFG_DRIVERS_HDF_TESTS_ENABLE
+#define OS_SEM_MAX_SUPPORT_NUM                          80
+#elif defined DRIVERS_HDF
+#define OS_SEM_MAX_SUPPORT_NUM                          50
+#else
 #define OS_SEM_MAX_SUPPORT_NUM                          20
-
+#endif
 /* ***************************** 配置队列模块 ******************************* */
 /* 队列模块裁剪开关 */
 #define OS_INCLUDE_QUEUE                                YES

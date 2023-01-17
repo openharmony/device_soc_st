@@ -108,7 +108,9 @@
    In this case, these drivers will not be included and the application code will 
    be based on direct access to peripherals registers 
    */
-  /*#define USE_STDPERIPH_DRIVER */
+#ifdef DRIVERS_HDF
+#define USE_STDPERIPH_DRIVER
+#endif
 #endif /* USE_STDPERIPH_DRIVER */
 
 /**
