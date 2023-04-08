@@ -312,14 +312,11 @@ static int32_t Mp1xxGpioUnsetIrq(struct GpioCntlr *cntlr, uint16_t gpio)
 {
     int32_t ret = HDF_SUCCESS;
     (void)gpio;
-    struct Mp1xxGpioCntlr *gCntlr = NULL;
 
     if (cntlr == NULL || cntlr->priv == NULL) {
         HDF_LOGE("%s: GpioCntlr or cntlr.priv null!", __func__);
         return HDF_ERR_INVALID_OBJECT;
     }
-
-    gCntlr = (struct Mp1xxGpioCntlr *)cntlr->priv;
 
     return ret;
 }
@@ -327,7 +324,6 @@ static int32_t Mp1xxGpioUnsetIrq(struct GpioCntlr *cntlr, uint16_t gpio)
 static int32_t Mp1xxGpioEnableIrq(struct GpioCntlr *cntlr, uint16_t gpio)
 {
     int32_t ret = HDF_SUCCESS;
-    struct Mp1xxGpioCntlr *gCntlr = NULL;
     struct GpioGroup *group = NULL;
     unsigned int bitNum = Mp1xxToBitNum(gpio);
 
@@ -353,7 +349,6 @@ static int32_t Mp1xxGpioEnableIrq(struct GpioCntlr *cntlr, uint16_t gpio)
     EXTI_ConfigStructure.Mode = EXTI_MODE_C1_INTERRUPT;
 
     HAL_EXTI_SetConfigLine(&hexti, &EXTI_ConfigStructure);
-    gCntlr = (struct Mp1xxGpioCntlr *)cntlr->priv;
 
     return ret;
 }
